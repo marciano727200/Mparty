@@ -1,1 +1,101 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Cine con Amigos</title>
+<style>
+:root{--bg:#07090d;--panel:#10131a;--text:#f5f7fb;--muted:#8d96a8;--r:#ff1744;--g:#39ff14;--b:#00e5ff}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 50% 0,#21030b 0,#07090d 45%,#030406 100%);color:var(--text);font-family:Arial,Helvetica,sans-serif;min-height:100vh}
+body:before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.13;background:linear-gradient(90deg,transparent 49.5%,var(--g) 50%,transparent 50.5%);background-size:100px 100px}
+.app{max-width:1400px;margin:auto;padding:18px}.top{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:16px}.logo{font-size:26px;font-weight:900;text-shadow:0 0 10px var(--r),0 0 20px var(--g)}.pill{border:1px solid var(--g);box-shadow:0 0 10px #39ff1466;border-radius:999px;padding:8px 13px;color:var(--g);font-size:13px}
+.card{background:#0d1017dd;border:1px solid #39ff1466;border-radius:18px;box-shadow:0 0 18px #00e5ff18,0 0 35px #ff174418;padding:20px}
+h1,h2{margin:0 0 10px}p{color:var(--muted)}input,button{font:inherit}input{width:100%;background:#06080c;color:white;border:1px solid #394252;border-radius:11px;padding:13px;margin:6px 0;outline:none}input:focus{border-color:var(--g);box-shadow:0 0 10px #39ff1433}
+.btn{border:1px solid var(--g);background:#071009;color:var(--g);padding:12px 16px;border-radius:11px;cursor:pointer;font-weight:800;box-shadow:0 0 10px #39ff1433}.btn:hover{filter:brightness(1.25)}.red{border-color:var(--r);color:#ff5375}.blue{border-color:var(--b);color:var(--b)}
+.center{min-height:80vh;display:grid;place-items:center}.landing{width:min(620px,100%);text-align:center}.actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px}
+.hidden{display:none!important}.room{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:15px}.movie{min-width:0}.screen{position:relative;background:#000;border-radius:15px;overflow:hidden;aspect-ratio:16/9;border:1px solid #39ff1488;box-shadow:0 0 22px #39ff1430,0 0 35px #ff174425;display:grid;place-items:center}.screen iframe,.screen video{width:100%;height:100%;border:0;display:block}.empty{text-align:center;color:#667080}.empty .big{font-size:60px}
+.controls{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:10px}.controls .spacer{flex:1}.hostBadge{font-size:11px;color:var(--g)}
+.sidebar{display:flex;flex-direction:column;min-height:0}.people{max-height:130px;overflow:auto;border-bottom:1px solid #252b36;padding-bottom:8px;margin-bottom:8px}.person{padding:6px 4px}.person.host{color:var(--g)}.chat{display:flex;flex-direction:column;min-height:300px;flex:1}.messages{flex:1;min-height:200px;max-height:calc(100vh - 330px);overflow:auto;padding:5px}.msg{margin:7px 0}.msg b{color:var(--g)}.msg span{display:block;background:#171c25;border-radius:10px;padding:7px 9px;color:#e4e7ed;word-break:break-word}.chatform{display:flex;gap:7px}.chatform input{margin:0}.chatform button{white-space:nowrap}.urlbar{display:flex;gap:7px;margin-top:10px}.urlbar input{margin:0}.notice{font-size:12px;color:#747e90;margin-top:8px}.fullscreen{position:fixed;inset:0;z-index:50;background:#000;padding:0}.fullscreen .screen{height:100%;width:100%;aspect-ratio:auto;border:0;border-radius:0}.fullscreen .screen video,.fullscreen .screen iframe{height:100%;width:100%}.closefs{position:absolute;right:14px;top:14px;z-index:5}
+@media(max-width:850px){.room{grid-template-columns:1fr}.sidebar{min-height:420px}.messages{max-height:280px}.top{align-items:flex-start}.actions{grid-template-columns:1fr}.app{padding:10px}.card{padding:14px}.urlbar{flex-direction:column}}
+</style>
+</head>
+<body>
+<div class="app">
+<header class="top"><div class="logo">🎬 CINE<span style="color:var(--g)">•</span>AMIGOS</div><div id="roomPill" class="pill hidden"></div></header>
 
+<section id="landing" class="center">
+<div class="card landing">
+<h1>🍿 Mira películas con tus amigos</h1>
+<p>Crea una sala privada, comparte el código y disfruten juntos. YouTube y vídeos directos son compatibles.</p>
+<input id="name" maxlength="30" placeholder="Tu nombre">
+<div class="actions"><button class="btn" onclick="createRoom()">✨ Crear sala</button><button class="btn blue" onclick="showJoin()">🚪 Unirme a sala</button></div>
+<div id="joinBox" class="hidden" style="margin-top:10px"><input id="roomCode" maxlength="6" placeholder="Código de sala (ej. A1B2C3)" style="text-transform:uppercase"><button class="btn blue" onclick="joinRoom()">Entrar</button></div>
+<p class="notice">Los controles de la película los maneja el anfitrión para mantener la reproducción sincronizada.</p>
+</div>
+</section>
+
+<section id="room" class="room hidden">
+<div class="movie">
+<div class="card">
+<div class="screen" id="screen"><div class="empty"><div class="big">🍿</div><div>El anfitrión aún no ha cargado una película</div></div></div>
+<div id="hostControls" class="hidden">
+<div class="urlbar"><input id="mediaUrl" placeholder="Pega un enlace de YouTube o de un vídeo .mp4/.webm"><button class="btn" onclick="loadMedia()">▶ Cargar</button></div>
+<div class="notice">También se intentarán abrir otras páginas como contenido incrustado, pero algunas páginas bloquean la inserción.</div>
+<div class="controls"><button class="btn" onclick="playMedia()">▶ Reproducir</button><button class="btn" onclick="pauseMedia()">⏸ Pausar</button><button class="btn" onclick="seekMedia(-10)">↶ -10s</button><button class="btn" onclick="seekMedia(10)">+10s ↷</button><button class="btn blue" onclick="fullscreen()">⛶ Pantalla completa</button></div>
+</div>
+<div class="controls"><div class="spacer"></div><button class="btn blue" onclick="copyInvite()">🔗 Copiar invitación</button><button class="btn red" onclick="leaveRoom()">Salir</button></div>
+</div>
+</div>
+
+<aside class="card sidebar">
+<h2>💬 Chat</h2>
+<div id="people" class="people"></div>
+<div id="messages" class="messages"></div>
+<form class="chatform" onsubmit="sendChat(event)"><input id="chatInput" maxlength="500" placeholder="Escribe un mensaje..."><button class="btn">Enviar</button></form>
+<p class="notice">Sala: <b id="roomCodeShow"></b> · <span id="hostText"></span></p>
+</aside>
+</section>
+</div>
+
+<div id="fs" class="fullscreen hidden"><button class="btn closefs" onclick="exitFullscreen()">✕</button><div class="screen" id="fsScreen"></div></div>
+
+<script>
+let room="", userId="", state=null, timer=null, lastVersion=0, mediaEl=null, lastMediaKey="";
+
+function nameVal(){return (document.getElementById("name").value||"").trim().slice(0,30)||"Invitado"}
+function showJoin(){document.getElementById("joinBox").classList.toggle("hidden");document.getElementById("roomCode").focus()}
+async function api(url,opts={}){let r=await fetch(url,{...opts,headers:{"Content-Type":"application/json",...(opts.headers||{})}});let d=await r.json();if(!r.ok)throw Error(d.error||"Error");return d}
+async function createRoom(){try{let d=await api("/api/room",{method:"POST",body:JSON.stringify({name:nameVal()})});enter(d)}catch(e){alert(e.message)}}
+async function joinRoom(){try{let d=await api("/api/room/join",{method:"POST",body:JSON.stringify({name:nameVal(),room:document.getElementById("roomCode").value.toUpperCase()})});enter(d)}catch(e){alert(e.message)}}
+function enter(d){room=d.room;userId=d.userId;state=d.state;document.getElementById("landing").classList.add("hidden");document.getElementById("room").classList.remove("hidden");document.getElementById("roomPill").classList.remove("hidden");document.getElementById("roomPill").textContent="SALA "+room;document.getElementById("roomCodeShow").textContent=room;render();if(timer)clearInterval(timer);timer=setInterval(poll,800)}
+async function poll(){try{let d=await api("/api/room/"+room+"/state");if(d.version!==lastVersion){state=d;render()}}catch(e){}}
+function isHost(){return state&&state.hostId===userId}
+function render(){if(!state)return;lastVersion=state.version;document.getElementById("hostControls").classList.toggle("hidden",!isHost());document.getElementById("hostText").textContent=isHost()?"eres el anfitrión":"anfitrión controla la película";document.getElementById("people").innerHTML=state.users.map(u=>`<div class="person ${u.id===state.hostId?"host":""}">👤 ${esc(u.name)} ${u.id===state.hostId?"★":""}</div>`).join("");document.getElementById("messages").innerHTML=state.messages.map(m=>`<div class="msg"><b>${esc(m.name)}</b><span>${esc(m.text)}</span></div>`).join("");document.getElementById("messages").scrollTop=999999;renderMedia()}
+function esc(s){return String(s).replace(/[&<>"']/g,x=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[x]))}
+function renderMedia(){
+ let m=state.media, key=m.type+":"+(m.id||m.url||"");
+ if(m.type==="none"){document.getElementById("screen").innerHTML='<div class="empty"><div class="big">🍿</div><div>El anfitrión aún no ha cargado una película</div></div>';mediaEl=null;lastMediaKey="";return}
+ if(key===lastMediaKey){ if(m.type==="video") applyVideoState(); else if(m.type==="youtube") syncYoutube(); return; }
+ lastMediaKey=key;
+ if(m.type==="youtube"){document.getElementById("screen").innerHTML=`<iframe id="yt" src="https://www.youtube.com/embed/${encodeURIComponent(m.id)}?enablejsapi=1&rel=0&playsinline=1&origin=${encodeURIComponent(location.origin)}" allow="autoplay; encrypted-media; fullscreen; picture-in-picture" allowfullscreen></iframe>`;mediaEl=null;setTimeout(syncYoutube,350);return}
+ if(m.type==="video"){document.getElementById("screen").innerHTML=`<video id="vid" src="${esc(m.url)}" controls playsinline></video>`;mediaEl=document.getElementById("vid");applyVideoState();return}
+ document.getElementById("screen").innerHTML=`<iframe src="${esc(m.url)}" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen referrerpolicy="no-referrer"></iframe>`;mediaEl=null;
+}
+function ytCommand(func,args=[]){const f=document.getElementById("yt");if(f)f.contentWindow.postMessage(JSON.stringify({event:"command",func,args}),"*")}
+function syncYoutube(){const m=state.media;ytCommand("seekTo",[Math.max(0,m.time+(m.playing?(Date.now()-m.updatedAt)/1000:0)),true]);if(m.playing)ytCommand("playVideo");else ytCommand("pauseVideo")}
+function applyVideoState(){if(!mediaEl)return;let target=state.media.time+(state.media.playing?(Date.now()-state.media.updatedAt)/1000:0);try{if(Math.abs(mediaEl.currentTime-target)>1)mediaEl.currentTime=target;if(state.media.playing)mediaEl.play().catch(()=>{});else mediaEl.pause()}catch(e){}}
+async function mediaAction(kind,time){if(!isHost())return;try{let d=await api("/api/room/"+room+"/media",{method:"POST",body:JSON.stringify({userId,kind,time})});state=d;render()}catch(e){alert(e.message)}}
+async function loadMedia(){let url=document.getElementById("mediaUrl").value.trim();if(!url||!isHost())return;try{let d=await api("/api/room/"+room+"/media",{method:"POST",body:JSON.stringify({userId,kind:"load",url})});state=d;render()}catch(e){alert(e.message)}}
+function playMedia(){let t=currentTime();mediaAction("play",t)}
+function pauseMedia(){let t=currentTime();mediaAction("pause",t)}
+function seekMedia(s){mediaAction("seek",Math.max(0,currentTime()+s))}
+function currentTime(){if(mediaEl)return mediaEl.currentTime||0;return state?.media?.time||0}
+async function sendChat(e){e.preventDefault();let input=document.getElementById("chatInput"),text=input.value.trim();if(!text)return;input.value="";try{let d=await api("/api/room/"+room+"/chat",{method:"POST",body:JSON.stringify({userId,text})});state=d;render()}catch(e){alert(e.message)}}
+async function leaveRoom(){try{await api("/api/room/"+room+"/leave",{method:"POST",body:JSON.stringify({userId})})}catch(e){}location.reload()}
+function copyInvite(){let url=location.href.split("?")[0]+"?room="+room;navigator.clipboard?.writeText(url);alert("Invitación copiada. Comparte el código "+room+" o este enlace.")}
+function fullscreen(){let s=document.getElementById("screen"),fs=document.getElementById("fs"),target=document.getElementById("fsScreen");target.innerHTML=s.innerHTML;fs.classList.remove("hidden");document.documentElement.requestFullscreen?.().catch(()=>{})}
+function exitFullscreen(){document.getElementById("fs").classList.add("hidden");document.getElementById("fsScreen").innerHTML="";document.exitFullscreen?.().catch(()=>{})}
+const q=new URLSearchParams(location.search).get("room");if(q){document.getElementById("roomCode").value=q.toUpperCase();showJoin()}
+</script>
+</body>
+</html>
