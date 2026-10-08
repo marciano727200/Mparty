@@ -1,12 +1,8 @@
 {
   "name": "cine-con-amigos",
   "version": "1.0.0",
-  "description": "Sala para ver películas con amigos",
-  "main": "server.js",
+  "private": true,
   "scripts": {
     "start": "node server.js"
-  },
-  "engines": {
-    "node": ">=18"
   }
 }
