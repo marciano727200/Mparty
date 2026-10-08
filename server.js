@@ -38,8 +38,12 @@ async function body(req) {
   });
 }
 function mediaFor(url) {
-  const u=clean(url,2000);
+  let u=clean(url,2000);
   if (!u) return {type:"none",url:""};
+  // Accept a full OneDrive <iframe ...> embed code as well as a plain URL.
+  // We extract only the src so the browser receives the actual Microsoft embed page.
+  const iframeMatch = u.match(/<iframe\b[^>]*\bsrc=["']([^"']+)["'][^>]*>/i);
+  if (iframeMatch) u = iframeMatch[1];
   // OneDrive share links: add the official embed hint so the iframe can render
   // the shared media instead of the normal OneDrive landing page.
   try {
@@ -50,7 +54,11 @@ function mediaFor(url) {
       return {type:"onedrive",url:x.toString(),originalUrl:u};
     }
     if (host === "onedrive.live.com" || host.endsWith(".onedrive.live.com")) {
-      if (x.pathname.startsWith("/embed")) return {type:"onedrive",url:x.toString(),originalUrl:u};
+      // Current OneDrive embed links can use /personal/.../_layouts/15/embed.aspx
+      // and are already ready to be displayed in an iframe.
+      if (x.pathname.includes("/_layouts/15/embed.aspx") || x.pathname.startsWith("/embed")) {
+        return {type:"onedrive",url:x.toString(),originalUrl:u};
+      }
       if (x.searchParams.has("resid") || x.searchParams.has("id")) {
         const q = new URLSearchParams(x.searchParams);
         if (!q.has("embed")) q.set("embed","1");
