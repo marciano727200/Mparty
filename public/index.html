@@ -40,7 +40,7 @@ h1,h2{margin:0 0 10px}p{color:var(--muted)}input,button{font:inherit}input{width
 <div class="screen" id="screen"><div class="empty"><div class="big">🍿</div><div>El anfitrión aún no ha cargado una película</div></div></div>
 <div id="hostControls" class="hidden">
 <div class="urlbar"><input id="mediaUrl" placeholder="Pega un enlace de YouTube o de un vídeo .mp4/.webm"><button class="btn" onclick="loadMedia()">▶ Cargar</button></div>
-<div class="notice">También se intentarán abrir otras páginas como contenido incrustado, pero algunas páginas bloquean la inserción.</div>
+<div class="notice">También se admiten enlaces de OneDrive (incluidos los que empiezan por <b>1drv.ms</b>), YouTube y vídeos directos. Algunos servicios pueden bloquear la inserción.</div>
 <div class="controls"><button class="btn" onclick="playMedia()">▶ Reproducir</button><button class="btn" onclick="pauseMedia()">⏸ Pausar</button><button class="btn" onclick="seekMedia(-10)">↶ -10s</button><button class="btn" onclick="seekMedia(10)">+10s ↷</button><button class="btn blue" onclick="fullscreen()">⛶ Pantalla completa</button></div>
 </div>
 <div class="controls"><div class="spacer"></div><button class="btn blue" onclick="copyInvite()">🔗 Copiar invitación</button><button class="btn red" onclick="leaveRoom()">Salir</button></div>
@@ -79,6 +79,11 @@ function renderMedia(){
  lastMediaKey=key;
  if(m.type==="youtube"){document.getElementById("screen").innerHTML=`<iframe id="yt" src="https://www.youtube.com/embed/${encodeURIComponent(m.id)}?enablejsapi=1&rel=0&playsinline=1&origin=${encodeURIComponent(location.origin)}" allow="autoplay; encrypted-media; fullscreen; picture-in-picture" allowfullscreen></iframe>`;mediaEl=null;setTimeout(syncYoutube,350);return}
  if(m.type==="video"){document.getElementById("screen").innerHTML=`<video id="vid" src="${esc(m.url)}" controls playsinline></video>`;mediaEl=document.getElementById("vid");applyVideoState();return}
+ if(m.type==="onedrive"){
+   document.getElementById("screen").innerHTML=`<iframe src="${esc(m.url)}" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen referrerpolicy="no-referrer"></iframe>`;
+   mediaEl=null;
+   return;
+ }
  document.getElementById("screen").innerHTML=`<iframe src="${esc(m.url)}" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen referrerpolicy="no-referrer"></iframe>`;mediaEl=null;
 }
 function ytCommand(func,args=[]){const f=document.getElementById("yt");if(f)f.contentWindow.postMessage(JSON.stringify({event:"command",func,args}),"*")}
