@@ -39,8 +39,8 @@ h1,h2{margin:0 0 10px}p{color:var(--muted)}input,button{font:inherit}input{width
 <div class="card">
 <div class="screen" id="screen"><div class="empty"><div class="big">🍿</div><div>El anfitrión aún no ha cargado una película</div></div></div>
 <div id="hostControls" class="hidden">
-<div class="urlbar"><input id="mediaUrl" placeholder="Pega un enlace de YouTube o de un vídeo .mp4/.webm"><button class="btn" onclick="loadMedia()">▶ Cargar</button></div>
-<div class="notice">También se admiten enlaces de OneDrive (incluidos los que empiezan por <b>1drv.ms</b>), YouTube y vídeos directos. Algunos servicios pueden bloquear la inserción.</div>
+<div class="urlbar"><input id="mediaUrl" placeholder="Pega un enlace o el código <iframe> de YouTube/OneDrive"><button class="btn" onclick="loadMedia()">▶ Cargar</button></div>
+<div class="notice">También puedes pegar el enlace de inserción de OneDrive o el código <b>&lt;iframe&gt;</b> que te da OneDrive. También se admiten YouTube y vídeos directos.</div>
 <div class="controls"><button class="btn" onclick="playMedia()">▶ Reproducir</button><button class="btn" onclick="pauseMedia()">⏸ Pausar</button><button class="btn" onclick="seekMedia(-10)">↶ -10s</button><button class="btn" onclick="seekMedia(10)">+10s ↷</button><button class="btn blue" onclick="fullscreen()">⛶ Pantalla completa</button></div>
 </div>
 <div class="controls"><div class="spacer"></div><button class="btn blue" onclick="copyInvite()">🔗 Copiar invitación</button><button class="btn red" onclick="leaveRoom()">Salir</button></div>
