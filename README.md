@@ -7,7 +7,8 @@ Página independiente estilo Rave para ver contenido con amigos.
 - Enlace de invitación.
 - Usuarios dentro de la sala.
 - Chat.
-- YouTube.
+- YouTube (enlaces normales, Shorts, Live y enlaces de inserción).
+- Códigos HTML `<iframe>`: extrae y procesa el atributo `src` automáticamente.
 - Enlaces directos `.mp4`, `.webm`, `.ogg`, etc.
 - Intento de reproducción mediante iframe para otras páginas compatibles.
 - Controles del anfitrión.
@@ -37,7 +38,7 @@ Para probar con dos dispositivos en la misma red Wi‑Fi, usa la IP local de la 
 
 No todos los sitios permiten que su contenido se coloque dentro de un iframe. Si una página utiliza políticas como `X-Frame-Options` o `Content-Security-Policy`, el navegador impedirá mostrarla dentro de Cine con Amigos. Eso no se puede solucionar desde JavaScript del navegador.
 
-Para YouTube se usa el reproductor oficial incrustado.
+Para YouTube se usa el reproductor oficial incrustado. Si el propietario del video desactiva la inserción, YouTube no permitirá reproducirlo dentro de la sala. El anfitrión controla la reproducción y el cliente intenta sincronizar el tiempo; el navegador puede exigir que cada participante toque una vez el reproductor para permitir audio/autoplay.
 
 ## Publicación
 
