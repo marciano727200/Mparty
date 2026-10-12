@@ -50,3 +50,10 @@ En Render:
 - Start command: `node server.js`
 
 La versión actual guarda las salas en memoria. Si el servidor se reinicia, las salas desaparecen. Para una versión de producción conviene agregar una base de datos y WebSockets.
+
+
+## Pantalla completa y orientación
+- El reproductor original se mueve a pantalla completa sin crear una copia, para conservar el tiempo de reproducción y evitar reiniciar el video.
+- Se solicita orientación horizontal cuando el navegador móvil lo permite; si el navegador lo bloquea, se mantiene pantalla completa.
+- El video usa `object-fit: contain` para conservar la imagen completa sin recortar los bordes.
+- La reproducción fluida depende también de la velocidad de conexión, del servidor del video y de si el sitio externo permite inserción.
