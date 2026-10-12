@@ -19,17 +19,29 @@ function getSession(req) { const t=req.headers.authorization?.replace(/^Bearer\s
 function send(res,status,data,type="application/json") { res.writeHead(status,{"Content-Type":type,"Cache-Control":"no-store","Access-Control-Allow-Origin":"*"}); res.end(type.includes("json")?JSON.stringify(data):data); }
 async function body(req){return await new Promise((resolve,reject)=>{let b="";req.on("data",x=>{b+=x;if(b.length>8_000_000)req.destroy()});req.on("end",()=>{try{resolve(JSON.parse(b||"{}"))}catch(e){resolve({})}});req.on("error",reject)})}
 function mediaFor(url){
-  let u=clean(url,5000); if(!u)return {type:"none",url:""};
-  const iframeMatch=u.match(/<iframe\b[^>]*\bsrc=["']([^"']+)["'][^>]*>/i); if(iframeMatch)u=iframeMatch[1];
+  // Preserve pasted iframe HTML long enough to extract its src; clean() removes angle brackets.
+  let raw=String(url ?? "").trim().slice(0,8000);
+  if(!raw)return {type:"none",url:""};
+  const iframeMatch=raw.match(/<iframe\b[^>]*\bsrc=["']([^"']+)["'][^>]*>/i);
+  let u=(iframeMatch ? iframeMatch[1] : raw).replace(/&amp;/gi,"&").trim();
+  u=clean(u,5000);
+  if(!u)return {type:"none",url:""};
   try{
     const x=new URL(u.startsWith("http")?u:"https://"+u),host=x.hostname.toLowerCase();
     if(host==="1drv.ms"||host.endsWith(".1drv.ms")){if(!x.searchParams.has("embed"))x.searchParams.set("embed","1");return {type:"onedrive",url:x.toString(),originalUrl:u};}
     if(host==="onedrive.live.com"||host.endsWith(".onedrive.live.com"))return {type:"onedrive",url:x.toString(),originalUrl:u};
   }catch{}
-  if(/^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.be)\//i.test(u)){
-    let id="";try{const x=new URL(u.startsWith("http")?u:"https://"+u);if(x.hostname.includes("youtu.be"))id=x.pathname.slice(1).split("/")[0];else if(x.pathname==="/watch")id=x.searchParams.get("v")||"";else if(x.pathname.startsWith("/shorts/"))id=x.pathname.split("/")[2]||"";else if(x.pathname.startsWith("/embed/"))id=x.pathname.split("/")[2]||"";}catch{}
-    if(id)return {type:"youtube",url:u,id};
-  }
+  try{
+    const y=new URL(u.startsWith("http")?u:"https://"+u);
+    const yh=y.hostname.toLowerCase();
+    if(["youtube.com","www.youtube.com","m.youtube.com","music.youtube.com","youtu.be","www.youtu.be","youtube-nocookie.com","www.youtube-nocookie.com"].includes(yh)){
+      let id="";
+      if(yh.includes("youtu.be")) id=y.pathname.split("/").filter(Boolean)[0]||"";
+      else if(y.pathname==="/watch") id=y.searchParams.get("v")||"";
+      else if(/^\/(shorts|embed|live)\//.test(y.pathname)) id=y.pathname.split("/")[2]||"";
+      if(id && /^[A-Za-z0-9_-]{6,20}$/.test(id)) return {type:"youtube",url:u,id};
+    }
+  }catch{}
   if(/\.(mp4|webm|ogg|m4v)(\?.*)?$/i.test(u))return {type:"video",url:u};
   return {type:"iframe",url:u};
 }
@@ -51,7 +63,7 @@ const server=http.createServer(async(req,res)=>{try{
   if(u.pathname==="/api/catalog"&&req.method==="GET")return send(res,200,{items:catalogPublic()});
   if(u.pathname==="/api/catalog"&&req.method==="POST"){
     const s=requireAuth(req,res);if(!s)return;if(!s.isAdmin)return send(res,403,{error:"Solo el administrador puede agregar películas."});
-    const b=await body(req),title=clean(b.title,100),url=clean(b.url,5000),image=String(b.image||"");
+    const b=await body(req),title=clean(b.title,100),url=String(b.url||"").trim().slice(0,8000),image=String(b.image||"");
     if(!title||!url)return send(res,400,{error:"Falta el nombre o la URL de la película."});
     if(image.length>6_000_000)return send(res,400,{error:"La imagen es demasiado grande. Usa una imagen más pequeña."});
     const id=crypto.randomUUID();catalog.set(id,{id,title,image,media:mediaFor(url),createdAt:Date.now()});return send(res,200,{items:catalogPublic()});
