@@ -7,21 +7,85 @@
 <section id="room" class="room hidden"><div class="movie"><div class="card"><div class="screen" id="screen"><div class="empty"><div class="big">🍿</div><div>Cargando...</div></div></div><div id="hostControls" class="hidden"><div class="urlbar"><input id="mediaUrl" placeholder="URL o código &lt;iframe&gt;"><button class="btn" onclick="loadMedia()">▶ Cargar</button></div><div class="controls"><button class="btn" onclick="mediaAction('play',currentTime())">▶</button><button class="btn" onclick="mediaAction('pause',currentTime())">⏸</button><button class="btn" onclick="seekMedia(-10)">↶10</button><button class="btn" onclick="seekMedia(10)">10↷</button><button class="btn blue" onclick="fullScreen()">⛶</button></div></div><div class="controls"><div class="spacer"></div><button class="btn blue" onclick="copyInvite()">🔗 Invitar</button><button class="btn red" onclick="leaveRoom()">Salir</button></div></div></div><aside class="card sidebar"><h2>💬 Chat</h2><div id="people" class="people"></div><div id="messages" class="messages"></div><form class="chatform" onsubmit="sendChat(event)"><input id="chatInput" placeholder="Escribe..."><button class="btn">Enviar</button></form><p class="notice">Sala: <b id="roomShow"></b></p></aside></section></div><div id="fs" class="fs hidden"><button class="btn red close" onclick="exitFull()" aria-label="Cerrar pantalla completa">✕</button><div id="fsStage"></div></div>
 <script>
 let token=localStorage.getItem('mparty_token')||'',me=null,room='',userId='',state=null,lastVersion=0,timer=null,mediaEl=null,lastMediaKey='',screenPlaceholder=null,orientationLocked=false,lastVideoSync=0;
-const $=id=>document.getElementById(id);function esc(s){return String(s).replace(/[&<>"']/g,x=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[x]))}async function api(url,opts={}){const r=await fetch(url,{...opts,headers:{'Content-Type':'application/json',...(token?{Authorization:'Bearer '+token}:{}),...(opts.headers||{})}});const d=await r.json();if(!r.ok)throw Error(d.error||'Error');return d}
+const $=id=>document.getElementById(id);function esc(s){return String(s).replace(/[&<>"']/g,x=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;}[x]))}async function api(url,opts={}){const r=await fetch(url,{...opts,headers:{'Content-Type':'application/json',...(token?{Authorization:'Bearer '+token}:{}),...(opts.headers||{})}});const d=await r.json();if(!r.ok)throw Error(d.error||'Error');return d}
 async function login(){try{const d=await api('/api/login',{method:'POST',body:JSON.stringify({name:$('loginName').value,password:$('loginPass').value})});token=d.token;me=d.user;localStorage.setItem('mparty_token',token);showHome()}catch(e){alert(e.message)}}
 async function boot(){if(!token)return showLogin();try{const d=await api('/api/me');me=d.user;showHome()}catch(e){localStorage.removeItem('mparty_token');token='';showLogin()}}function hideAll(){['login','home','admin','room'].forEach(x=>$(x).classList.add('hidden'))}function showLogin(){hideAll();$('login').classList.remove('hidden')}function showHome(){hideAll();$('home').classList.remove('hidden');$('userPill').classList.remove('hidden');$('userPill').textContent=me.name+(me.isAdmin?' · ADMIN':'');$('adminBtn').classList.toggle('hidden',!me.isAdmin);loadCatalog()}function showAdmin(){if(!me?.isAdmin)return;hideAll();$('admin').classList.remove('hidden');loadAdmin()}
 async function loadCatalog(){try{const d=await api('/api/catalog');$('catalog').innerHTML=d.items.length?d.items.map(card).join(''):'<div class="card" style="grid-column:1/-1;text-align:center">Todavía no hay películas. El administrador puede agregarlas.</div>'}catch(e){alert(e.message)}}function card(x){return `<article class="moviecard"><img class="poster" src="${x.image||''}" onerror="this.style.display='none'"><div class="moviebody"><h3>${esc(x.title)}</h3><button class="btn" style="width:100%" onclick="openMovie('${x.id}')">▶ ABRIR EN SALA</button></div></article>`}
 async function openMovie(id){try{const d=await api('/api/catalog/'+id+'/room',{method:'POST'});enterRoom(d)}catch(e){alert(e.message)}}async function createRoom(){try{const d=await api('/api/room',{method:'POST'});enterRoom(d)}catch(e){alert(e.message)}}async function joinRoom(){try{const d=await api('/api/room/join',{method:'POST',body:JSON.stringify({room:$('joinCode').value.toUpperCase()})});enterRoom(d)}catch(e){alert(e.message)}}
 function enterRoom(d){room=d.room;userId=d.userId;state=d.state;hideAll();$('room').classList.remove('hidden');$('roomShow').textContent=room;render();clearInterval(timer);timer=setInterval(poll,1200)}async function poll(){try{const d=await api('/api/room/'+room+'/state');if(d.version!==lastVersion){state=d;render()}else if(state?.media?.type==='video')applyVideo(false)}catch(e){}}function isHost(){return state?.hostId===userId}
 function render(){lastVersion=state.version;$('hostControls').classList.toggle('hidden',!isHost());$('people').innerHTML=state.users.map(u=>`<span class="person ${u.id===state.hostId?'host':''}">👤 ${esc(u.name)}${u.id===state.hostId?' ★':''}</span>`).join('');$('messages').innerHTML=state.messages.map(m=>`<div class="msg"><b>${esc(m.name)}</b><span>${esc(m.text)}</span></div>`).join('');$('messages').scrollTop=999999;renderMedia()}
-function renderMedia(){const m=state.media,key=m.type+':'+(m.id||m.url||'');if(m.type==='none'){$('screen').innerHTML='<div class="empty"><div class="big">🍿</div><div>El anfitrión aún no ha cargado una película</div></div>';mediaEl=null;lastMediaKey='';return}if(key===lastMediaKey){if(m.type==='video')applyVideo(true);else if(m.type==='youtube')syncYouTube(false);return}lastMediaKey=key;if(m.type==='youtube'){$('screen').innerHTML=`<iframe id="yt" src="https://www.youtube.com/embed/${encodeURIComponent(m.id)}?enablejsapi=1&playsinline=1&controls=0&origin=${encodeURIComponent(location.origin)}" allow="autoplay;encrypted-media;fullscreen;picture-in-picture" allowfullscreen></iframe>`;mediaEl=null;setTimeout(()=>syncYouTube(true),500);return}if(m.type==='video'){$('screen').innerHTML=`<video id="vid" src="${esc(m.url)}" playsinline webkit-playsinline preload="auto" disablepictureinpicture></video>`;mediaEl=$('vid');mediaEl.addEventListener('waiting',()=>{$('screen').dataset.buffering='1'});mediaEl.addEventListener('stalled',()=>{$('screen').dataset.buffering='1'});mediaEl.addEventListener('playing',()=>{delete $('screen').dataset.buffering});mediaEl.addEventListener('canplay',()=>{delete $('screen').dataset.buffering});mediaEl.addEventListener('error',()=>{delete $('screen').dataset.buffering;showPlaybackHint()});applyVideo(true);return}$('screen').innerHTML=`<iframe src="${esc(m.url)}" allow="autoplay;fullscreen;picture-in-picture" allowfullscreen referrerpolicy="no-referrer"></iframe>`;mediaEl=null}
+function renderMedia(){const m=state.media,key=m.type+':'+(m.id||m.url||'');if(m.type==='none'){$('screen').innerHTML='<div class="empty"><div class="big">🍿</div><div>El anfitrión aún no ha cargado una película</div></div>';mediaEl=null;lastMediaKey='';return}if(key===lastMediaKey){if(m.type==='video')applyVideo(true);else if(m.type==='youtube')syncYouTube(false);return}lastMediaKey=key;if(m.type==='youtube'){$('screen').innerHTML=`<iframe id="yt" src="https://www.youtube.com/embed/${encodeURIComponent(m.id)}?enablejsapi=1&playsinline=1&controls=0&origin=${encodeURIComponent(location.origin)}" allow="autoplay;encrypted-media;fullscreen;picture-in-picture" allowfullscreen></iframe>`;mediaEl=null;setTimeout(()=>syncYouTube(true),500);return}if(m.type==='video'){$('screen').innerHTML=`<video id="vid" src="${esc(m.url)}" playsinline webkit-playsinline preload="auto" disablepictureinpicture></video>`;mediaEl=$('vid');mediaEl.addEventListener('waiting',()=>{$('screen').dataset.buffering='1'});mediaEl.addEventListener('stalled',()=>{$('screen').dataset.buffering='1'});mediaEl.addEventListener('playing',()=>{delete $('screen').dataset.buffering});mediaEl.addEventListener('canplay',()=>{delete$('screen').dataset.buffering});mediaEl.addEventListener('error',()=>{delete $('screen').dataset.buffering;showPlaybackHint()});applyVideo(true);return}$('screen').innerHTML=`<iframe src="${esc(m.url)}" allow="autoplay;fullscreen;picture-in-picture" allowfullscreen referrerpolicy="no-referrer"></iframe>`;mediaEl=null}
 function syncYouTube(forceSeek=false){const f=$('yt');if(!f||!state?.media)return;const t=targetMediaTime();try{if(forceSeek)f.contentWindow.postMessage(JSON.stringify({event:'command',func:'seekTo',args:[t,true]}),'*');f.contentWindow.postMessage(JSON.stringify({event:'command',func:state.media.playing?'playVideo':'pauseVideo',args:[]}),'*')}catch(e){}}
 function targetMediaTime(){return Math.max(0,Number(state?.media?.time||0)+(state?.media?.playing?(Date.now()-Number(state.media.updatedAt||Date.now()))/1000:0))}
 function applyVideo(force=false){if(!mediaEl||!state?.media)return;const now=Date.now();if(!force&&now-lastVideoSync<2200)return;lastVideoSync=now;const t=targetMediaTime();try{if(mediaEl.readyState>=2&&!mediaEl.seeking&&Math.abs(mediaEl.currentTime-t)>2.5){mediaEl.currentTime=t}if(state.media.playing){if(mediaEl.paused){const p=mediaEl.play();if(p&&p.catch)p.catch(()=>{showPlaybackHint()})}}else if(!mediaEl.paused){mediaEl.pause()}}catch(e){}}
 function showPlaybackHint(){if(!isHost()&&!$('playHint')){const hint=document.createElement('div');hint.id='playHint';hint.className='notice';hint.textContent='Si el video no inicia por las restricciones del teléfono, toca una vez el reproductor para permitir la reproducción.';$('screen').appendChild(hint)}}
 function currentTime(){return mediaEl?mediaEl.currentTime:targetMediaTime()}async function mediaAction(kind,time){if(!isHost())return;try{state=await api('/api/room/'+room+'/media',{method:'POST',body:JSON.stringify({userId,kind,time})});render()}catch(e){alert(e.message)}}async function loadMedia(){const url=$('mediaUrl').value.trim();if(!url)return;try{state=await api('/api/room/'+room+'/media',{method:'POST',body:JSON.stringify({userId,kind:'load',url})});render()}catch(e){alert(e.message)}}function seekMedia(s){mediaAction('seek',Math.max(0,currentTime()+s))}
 async function sendChat(e){e.preventDefault();const text=$('chatInput').value.trim();if(!text)return;$('chatInput').value='';try{state=await api('/api/room/'+room+'/chat',{method:'POST',body:JSON.stringify({userId,text})});render()}catch(e){alert(e.message)}}async function leaveRoom(){try{await api('/api/room/'+room+'/leave',{method:'POST',body:JSON.stringify({userId})})}catch(e){}showHome()}function copyInvite(){navigator.clipboard?.writeText(location.origin+'?room='+room);alert('Código de sala: '+room)}
-async function fullScreen(){const fs=$('fs'),screen=$('screen'),stage=$('fsStage');if(!screenPlaceholder){screenPlaceholder=document.createComment('mparty-screen-placeholder');screen.parentNode.insertBefore(screenPlaceholder,screen)}stage.appendChild(screen);fs.classList.remove('hidden');try{if(!document.fullscreenElement&&fs.requestFullscreen)await fs.requestFullscreen()}catch(e){}try{if(window.screen?.orientation?.lock){await window.screen.orientation.lock('landscape');orientationLocked=true}}catch(e){orientationLocked=false}applyVideo(true);if(state?.media?.type==='youtube')syncYouTube(false)}async function exitFull(){const fs=$('fs'),screen=$('screen');if(screenPlaceholder?.parentNode){screenPlaceholder.parentNode.insertBefore(screen,screenPlaceholder);screenPlaceholder.remove();screenPlaceholder=null}else $('room').querySelector('.movie .card')?.prepend(screen);fs.classList.add('hidden');try{if(orientationLocked&&window.screen?.orientation?.unlock)window.screen.orientation.unlock()}catch(e){}orientationLocked=false;try{if(document.fullscreenElement)await document.exitFullscreen()}catch(e){}applyVideo(true);if(state?.media?.type==='youtube')syncYouTube(false)}document.addEventListener('fullscreenchange',()=>{if(!document.fullscreenElement&&!$('fs').classList.contains('hidden')){const screen=$('screen');if(screenPlaceholder?.parentNode){screenPlaceholder.parentNode.insertBefore(screen,screenPlaceholder);screenPlaceholder.remove();screenPlaceholder=null}$('fs').classList.add('hidden');try{if(orientationLocked&&window.screen?.orientation?.unlock)window.screen.orientation.unlock()}catch(e){}orientationLocked=false}})
+
+async function fullScreen(){
+    const fs=$('fs'),screen=$('screen'),stage=$('fsStage');
+    if(!screenPlaceholder){
+        screenPlaceholder=document.createComment('mparty-screen-placeholder');
+        screen.parentNode.insertBefore(screenPlaceholder,screen);
+    }
+    stage.appendChild(screen);
+    fs.classList.remove('hidden');
+    try{if(!document.fullscreenElement&&fs.requestFullscreen)await fs.requestFullscreen()}catch(e){}
+    try{if(window.screen?.orientation?.lock){await window.screen.orientation.lock('landscape');orientationLocked=true}}catch(e){orientationLocked=false}
+    
+    setTimeout(()=>{
+        if(state?.media?.type==='video' && mediaEl){
+            if(state.media.playing) mediaEl.play().catch(()=>{});
+        }else if(state?.media?.type==='youtube'){
+            syncYouTube(true);
+        }
+    }, 200);
+}
+
+async function exitFull(){
+    const fs=$('fs'),screen=$('screen');
+    if(screenPlaceholder?.parentNode){
+        screenPlaceholder.parentNode.insertBefore(screen,screenPlaceholder);
+        screenPlaceholder.remove();
+        screenPlaceholder=null;
+    }else $('room').querySelector('.movie .card')?.prepend(screen);
+    fs.classList.add('hidden');
+    try{if(orientationLocked&&window.screen?.orientation?.unlock)window.screen.orientation.unlock()}catch(e){}
+    orientationLocked=false;
+    try{if(document.fullscreenElement)await document.exitFullscreen()}catch(e){}
+    
+    setTimeout(()=>{
+        if(state?.media?.type==='video' && mediaEl){
+            if(state.media.playing) mediaEl.play().catch(()=>{});
+        }else if(state?.media?.type==='youtube'){
+            syncYouTube(true);
+        }
+    }, 200);
+}
+
+document.addEventListener('fullscreenchange',()=>{
+    if(!document.fullscreenElement&&!$('fs').classList.contains('hidden')){
+        const screen=$('screen');
+        if(screenPlaceholder?.parentNode){
+            screenPlaceholder.parentNode.insertBefore(screen,screenPlaceholder);
+            screenPlaceholder.remove();
+            screenPlaceholder=null;
+        }
+        $('fs').classList.add('hidden');
+        try{if(orientationLocked&&window.screen?.orientation?.unlock)window.screen.orientation.unlock()}catch(e){}
+        orientationLocked=false;
+        
+        setTimeout(()=>{
+            if(state?.media?.type==='video' && mediaEl){
+                if(state.media.playing) mediaEl.play().catch(()=>{});
+            }else if(state?.media?.type==='youtube'){
+                syncYouTube(true);
+            }
+        }, 200);
+    }
+});
+
 async function addMovie(){if(!me?.isAdmin)return;const title=$('movieTitle').value.trim(),url=$('movieUrl').value.trim(),file=$('movieImage').files[0];if(!title||!url)return alert('Pon nombre y URL/HTML.');let image='';if(file){if(file.size>4*1024*1024)return alert('La imagen debe pesar menos de 4 MB.');image=await new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result);r.onerror=rej;r.readAsDataURL(file)})}try{await api('/api/catalog',{method:'POST',body:JSON.stringify({title,url,image})});$('movieTitle').value='';$('movieUrl').value='';$('movieImage').value='';loadAdmin();loadCatalog()}catch(e){alert(e.message)}}async function loadAdmin(){const d=await api('/api/catalog');$('adminList').innerHTML=d.items.map(x=>`<article class="moviecard"><img class="poster" src="${x.image||''}" onerror="this.style.display='none'"><div class="moviebody"><h3>${esc(x.title)}</h3><div class="row"><button class="btn" onclick="openMovie('${x.id}')">▶ Sala</button><button class="btn red" onclick="deleteMovie('${x.id}')">Eliminar</button></div></div></article>`).join('')||'<p>No hay películas.</p>'}async function deleteMovie(id){if(!confirm('¿Eliminar esta película?'))return;try{await api('/api/catalog/'+id,{method:'DELETE'});loadAdmin();loadCatalog()}catch(e){alert(e.message)}}async function logout(){localStorage.removeItem('mparty_token');token='';me=null;showLogin()}
 boot();
 </script></body></html>
+
