@@ -37,7 +37,6 @@ input:focus{border-color:var(--g);box-shadow:0 0 10px #39ff1433}
 .room{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:14px}
 .screen{position:relative;background:#000;border-radius:15px;overflow:hidden;aspect-ratio:16/9;border:1px solid #39ff1488;display:grid;place-items:center}
 .screen iframe,.screen video{width:100%;height:100%;border:0;display:block}
-.screen[data-buffering="1"]:after{content:"CARGANDO VIDEO…";position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);padding:12px 16px;border:1px solid var(--g);border-radius:12px;background:#050805e8;color:var(--g);font-size:13px;font-weight:900;letter-spacing:1px;pointer-events:none;box-shadow:0 0 18px #39ff1433}
 .empty{text-align:center;color:#667080}
 .big{font-size:58px}
 .controls,.urlbar{display:flex;gap:7px;flex-wrap:wrap;margin-top:9px}
@@ -87,7 +86,7 @@ input:focus{border-color:var(--g);box-shadow:0 0 10px #39ff1433}
       <div class="row" style="justify-content:space-between;align-items:center">
         <div>
           <h1>🎞️ CARTELERA</h1>
-          <p style="margin:0 0 12px">Accede a nuestro catálogo completo de contenido.</p>
+          <p style="margin:0 0 12px">Elige una opción para ver nuestro catálogo completo.</p>
           <button class="btn blue" style="font-size:16px;padding:12px 20px" onclick="showSubPage()">🎬 PELÍCULAS Y SERIES</button>
         </div>
         <div class="row">
@@ -120,17 +119,17 @@ input:focus{border-color:var(--g);box-shadow:0 0 10px #39ff1433}
         <button class="btn blue" onclick="showHome()">← Volver al Inicio</button>
       </div>
       <p>Explora y busca las películas disponibles para abrir en tu sala.</p>
-      <input id="searchBar" placeholder="🔍 Buscar película o serie..." oninput="filterCatalog()">
+      <input id="searchBar" placeholder="🔍 Buscar película o serie por nombre..." oninput="filterCatalog()">
     </div>
 
-    <!-- SECCION PARA QUE EL ADMIN PUEDA AGREGAR DESDE LA SUBPAGINA -->
+    <!-- PANEL ADMIN PARA AGREGAR CONTENIDO DESDE LA SUB-PAGINA -->
     <div id="subpageAdminAdd" class="card hidden" style="margin-bottom:14px">
-      <h2>➕ Agregar Película / Serie (Admin)</h2>
+      <h2>➕ Agregar Película / Serie (Modo Admin)</h2>
       <div class="adminform">
         <input id="subMovieTitle" placeholder="Nombre de la película o serie">
         <input id="subMovieUrl" placeholder="URL o código &lt;iframe&gt;">
         <label class="file full">🖼️ Imagen desde tu galería <input id="subMovieImage" type="file" accept="image/*"></label>
-        <button class="btn full" onclick="addMovieFromSub()">➕ AGREGAR AL CATÁLOGO</button>
+        <button class="btn full" onclick="addMovieFromSub()">➕ SUBIR Y PUBLICAR</button>
       </div>
     </div>
 
@@ -144,7 +143,7 @@ input:focus{border-color:var(--g);box-shadow:0 0 10px #39ff1433}
         <h1>⚙️ ADMINISTRADOR</h1>
         <button class="btn blue" onclick="showHome()">← Inicio</button>
       </div>
-      <p>Sube imágenes desde tu teléfono y agrega el HTML/URL de cada película.</p>
+      <p>Gestión global de la cartelera.</p>
       <div class="adminform">
         <input id="movieTitle" placeholder="Nombre de la película">
         <input id="movieUrl" placeholder="URL o código &lt;iframe&gt;">
@@ -155,14 +154,14 @@ input:focus{border-color:var(--g);box-shadow:0 0 10px #39ff1433}
     </div>
   </section>
 
-  <!-- ROOM -->
+  <!-- REPRODUCTOR / SALA -->
   <section id="room" class="room hidden">
     <div class="movie">
       <div class="card">
         <div class="screen" id="screen">
           <div class="empty"><div class="big">🍿</div><div>Cargando...</div></div>
         </div>
-        <div id="hostControls" class="hidden">
+        <div id="hostControls">
           <div class="urlbar">
             <input id="mediaUrl" placeholder="URL o código &lt;iframe&gt;">
             <button class="btn" onclick="loadMedia()">▶ Cargar</button>
@@ -172,7 +171,7 @@ input:focus{border-color:var(--g);box-shadow:0 0 10px #39ff1433}
             <button class="btn" onclick="mediaAction('pause',currentTime())">⏸</button>
             <button class="btn" onclick="seekMedia(-10)">↶10</button>
             <button class="btn" onclick="seekMedia(10)">10↷</button>
-            <button class="btn blue" onclick="fullScreen()">⛶</button>
+            <button class="btn blue" onclick="fullScreen()">⛶ Pantalla Completa</button>
           </div>
         </div>
         <div class="controls">
@@ -195,7 +194,7 @@ input:focus{border-color:var(--g);box-shadow:0 0 10px #39ff1433}
   </section>
 </div>
 
-<!-- FULLSCREEN STAGE CONTAINER -->
+<!-- CONTENEDOR PANTALLA COMPLETA -->
 <div id="fs" class="fs hidden">
   <button class="btn red close" onclick="exitFull()" aria-label="Cerrar pantalla completa">✕</button>
   <div id="fsStage"></div>
@@ -323,7 +322,7 @@ function enterRoomDirect(d) {
 }
 
 function render() {
-  $('hostControls').classList.toggle('hidden', false);$('people').innerHTML = state.users.map(u => `<span class="person host">👤 ${esc(u.name)}</span>`).join('');
+  $('people').innerHTML = state.users.map(u => `<span class="person host">👤 ${esc(u.name)}</span>`).join('');
   $('messages').innerHTML = state.messages.map(m => `<div class="msg"><b>${esc(m.name)}</b><span>${esc(m.text)}</span></div>`).join('');
   renderMedia();
 }
@@ -450,7 +449,7 @@ document.addEventListener('fullscreenchange', () => {
   }
 });
 
-/* --- SUBIR DESDE LA SUBPAGINA --- */
+/* AGREGAR CONTENIDO DESDE LA SUBPAGINA */
 async function addMovieFromSub() {
   if (!me?.isAdmin) return;
   const title = $('subMovieTitle').value.trim();
@@ -475,7 +474,7 @@ async function addMovieFromSub() {
   alert('¡Película o serie agregada al catálogo!');
 }
 
-/* --- ADMIN GENERAL --- */
+/* AGREGAR CONTENIDO DESDE EL ADMIN GENERAL */
 async function addMovie() {
   if (!me?.isAdmin) return;
   const title = $('movieTitle').value.trim();
@@ -495,4 +494,15 @@ async function addMovie() {
   catalogItems.unshift({ id: 'mov_' + Date.now(), title, url, image });
   localStorage.setItem('mparty_catalog', JSON.stringify(catalogItems));
   $('movieTitle').value = '';
-  $('movieUrl').value = '';$
+  $('movieUrl').value = '';$('movieImage').value = '';
+  loadAdmin();
+  alert('¡Película agregada con éxito!');
+}
+
+function loadAdmin() {
+  $('adminList').innerHTML = catalogItems.map(x => `
+    <article class="moviecard">
+      <img class="poster" src="${x.image || ''}" onerror="this.style.display='none'">
+      <div class="moviebody">
+        <h3>${esc(x.title)}</h3>
+        <div class
