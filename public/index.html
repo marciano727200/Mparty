@@ -49,12 +49,13 @@ input:focus{border-color:var(--g);box-shadow:0 0 10px #39ff1433}
 .msg span{display:block;background:#171c25;border-radius:10px;padding:7px 9px;word-break:break-word}
 .chatform{display:flex;gap:7px}
 .chatform input{margin:0}
-.fs{position:fixed;inset:0;z-index:100;background:#000;display:flex;align-items:center;justify-content:center;padding:0;overflow:hidden;touch-action:manipulation}
-.fs #fsStage{width:100%;height:100%;display:flex;align-items:center;justify-content:center}
-.fs .screen{height:100%;width:100%;max-width:100vw;max-height:100dvh;aspect-ratio:auto;border:0;border-radius:0;display:flex;align-items:center;justify-content:center}
-.fs .screen iframe,.fs .screen video{height:100%;width:100%;max-width:100%;max-height:100%;object-fit:contain;border:0}
-.fs .close{position:fixed;right:max(12px,env(safe-area-inset-right));top:max(12px,env(safe-area-inset-top));z-index:101;opacity:.65}
-.fs .close:focus,.fs .close:hover{opacity:1}
+
+/* ESTILOS DE PANTALLA COMPLETA MEJORADOS */
+.fs{position:fixed;inset:0;z-index:99999;background:#000;display:flex;align-items:center;justify-content:center;padding:0;overflow:hidden;touch-action:none}
+.fs #fsStage{width:100vw;height:100dvh;display:flex;align-items:center;justify-content:center;background:#000}
+.fs .screen{height:100dvh!important;width:100vw!important;max-width:100vw!important;max-height:100dvh!important;aspect-ratio:auto!important;border:0!important;border-radius:0!important}
+.fs .screen iframe,.fs .screen video{height:100%!important;width:100%!important;object-fit:contain!important}
+.fs .close{position:fixed;right:max(16px,env(safe-area-inset-right));top:max(16px,env(safe-area-inset-top));z-index:100000;opacity:.8;background:#ff1744;color:#fff;border:none;padding:10px 14px;border-radius:50%;font-size:18px;font-weight:bold;cursor:pointer}
 @media(max-width:850px){.room{grid-template-columns:1fr}.adminform{grid-template-columns:1fr}.adminform .full{grid-column:auto}.catalog{grid-template-columns:repeat(2,minmax(0,1fr))}}
 </style>
 </head>
@@ -179,7 +180,7 @@ input:focus{border-color:var(--g);box-shadow:0 0 10px #39ff1433}
 
 <!-- FULLSCREEN STAGE CONTAINER -->
 <div id="fs" class="fs hidden">
-  <button class="btn red close" onclick="exitFull()" aria-label="Cerrar pantalla completa">✕</button>
+  <button class="close" onclick="exitFull()" aria-label="Cerrar pantalla completa">✕</button>
   <div id="fsStage"></div>
 </div>
 
@@ -296,12 +297,14 @@ function renderMedia() {
   const m = state.media;
   const key = m.type + ':' + (m.id || m.url || '');
   if (m.type === 'none') {
-    $('screen').innerHTML = '<div class="empty"><div class="big">🍿</div><div>Carga una película o enlace multimedia</div></div>';
-    mediaEl = null;
-    lastMediaKey = '';
+    if (lastMediaKey !== '') {
+      $('screen').innerHTML = '<div class="empty"><div class="big">🍿</div><div>Carga una película o enlace multimedia</div></div>';
+      mediaEl = null;
+      lastMediaKey = '';
+    }
     return;
   }
-  if (key === lastMediaKey) return;
+  if (key === lastMediaKey) return; // EVITA RECARGAR SI ES LA MISMA PELICULA
   lastMediaKey = key;
 
   if (m.type === 'youtube') {
@@ -355,40 +358,59 @@ function copyInvite() {
   alert('¡Enlace de sala copiado!');
 }
 
+/* LÓGICA MEJORADA DE PANTALLA COMPLETA Y ROTACIÓN */
 async function fullScreen() {
   const fs = $('fs'), screen = $('screen'), stage =$('fsStage');
+  
   if (!screenPlaceholder) {
     screenPlaceholder = document.createComment('mparty-placeholder');
     screen.parentNode.insertBefore(screenPlaceholder, screen);
   }
+  
   stage.appendChild(screen);
   fs.classList.remove('hidden');
+
   try {
-    if (!document.fullscreenElement && fs.requestFullscreen) await fs.requestFullscreen();
+    if (fs.requestFullscreen) {
+      await fs.requestFullscreen();
+    } else if (fs.webkitRequestFullscreen) {
+      fs.webkitRequestFullscreen();
+    }
   } catch(e) {}
-  
-  setTimeout(() => {
-    if (mediaEl) mediaEl.play().catch(()=>{});
-  }, 200);
+
+  try {
+    if (screen.orientation && screen.orientation.lock) {
+      await screen.orientation.lock('landscape');
+    } else if (window.screen && window.screen.orientation && window.screen.orientation.lock) {
+      await window.screen.orientation.lock('landscape');
+    }
+  } catch(e) {}
 }
 
 async function exitFull() {
   const fs = $('fs'), screen =$('screen');
-  if (screenPlaceholder?.parentNode) {
+  
+  if (screenPlaceholder && screenPlaceholder.parentNode) {
     screenPlaceholder.parentNode.insertBefore(screen, screenPlaceholder);
     screenPlaceholder.remove();
     screenPlaceholder = null;
   } else {
     $('room').querySelector('.movie .card')?.prepend(screen);
   }
+  
   fs.classList.add('hidden');
+
+  try {
+    if (screen.orientation && screen.orientation.unlock) {
+      screen.orientation.unlock();
+    } else if (window.screen && window.screen.orientation && window.screen.orientation.unlock) {
+      window.screen.orientation.unlock();
+    }
+  } catch(e) {}
+
   try {
     if (document.fullscreenElement) await document.exitFullscreen();
   } catch(e) {}
-  
-  setTimeout(() => {
-    if (mediaEl) mediaEl.play().catch(()=>{});
-  }, 200);
 }
 
 document.addEventListener('fullscreenchange', () => {
