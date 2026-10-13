@@ -4,8 +4,6 @@ const path = require("path");
 const crypto = require("crypto");
 
 const PORT = process.env.PORT || 3000;
-const ADMIN_NAME = process.env.ADMIN_NAME || "MARCIANO";
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "MARCIAN0";
 const rooms = new Map();
 const sessions = new Map();
 const catalog = new Map();
@@ -18,8 +16,8 @@ function getRoom(c) { return rooms.get(String(c||"").toUpperCase()); }
 function getSession(req) { const t=req.headers.authorization?.replace(/^Bearer\s+/i,""); return t ? sessions.get(t) : null; }
 function send(res,status,data,type="application/json") { res.writeHead(status,{"Content-Type":type,"Cache-Control":"no-store","Access-Control-Allow-Origin":"*"}); res.end(type.includes("json")?JSON.stringify(data):data); }
 async function body(req){return await new Promise((resolve,reject)=>{let b="";req.on("data",x=>{b+=x;if(b.length>8_000_000)req.destroy()});req.on("end",()=>{try{resolve(JSON.parse(b||"{}"))}catch(e){resolve({})}});req.on("error",reject)})}
+
 function mediaFor(url){
-  // Preserve pasted iframe HTML long enough to extract its src; clean() removes angle brackets.
   let raw=String(url ?? "").trim().slice(0,8000);
   if(!raw)return {type:"none",url:""};
   const iframeMatch=raw.match(/<iframe\b[^>]*\bsrc=["']([^"']+)["'][^>]*>/i);
@@ -45,6 +43,7 @@ function mediaFor(url){
   if(/\.(mp4|webm|ogg|m4v)(\?.*)?$/i.test(u))return {type:"video",url:u};
   return {type:"iframe",url:u};
 }
+
 function roomPublic(r){return {code:r.code,hostId:r.hostId,users:[...r.users.values()].map(u=>({id:u.id,name:u.name})),media:r.media,version:r.version,messages:r.messages.slice(-100)}}
 function catalogPublic(){return [...catalog.values()].map(x=>({id:x.id,title:x.title,image:x.image,media:x.media,createdAt:x.createdAt})).sort((a,b)=>b.createdAt-a.createdAt)}
 function createRoomFor(user, media={type:"none",url:""}){let c=code();while(rooms.has(c))c=code();const id=crypto.randomUUID();const r={code:c,hostId:id,users:new Map([[id,{id,name:user.name}]]),media:{...media,playing:false,time:0,updatedAt:Date.now()},version:1,messages:[],lastActivity:Date.now()};rooms.set(c,r);return {room:c,userId:id,state:roomPublic(r)}}
@@ -54,18 +53,23 @@ setInterval(()=>{const now=Date.now();for(const[c,r]of rooms)if(now-r.lastActivi
 const server=http.createServer(async(req,res)=>{try{
   const u=new URL(req.url,`http://${req.headers.host}`);
   if(req.method==="OPTIONS"){res.writeHead(204,{"Access-Control-Allow-Origin":"*","Access-Control-Allow-Headers":"Content-Type, Authorization"});return res.end()}
+  
   if(u.pathname==="/api/login"&&req.method==="POST"){
-    const b=await body(req),name=clean(b.name,30),password=String(b.password||"");if(!name||!password)return send(res,400,{error:"Pon tu nombre y contraseña."});
-    const isAdmin=name.toUpperCase()===ADMIN_NAME.toUpperCase()&&password===ADMIN_PASSWORD;
-    const t=token();const s={name,isAdmin};sessions.set(t,s);return send(res,200,{token:t,user:s});
+    const b=await body(req),name=clean(b.name,30);
+    if(!name)return send(res,400,{error:"Pon tu nombre."});
+    const isAdmin=(name.toUpperCase()==="MARCIANO");
+    const t=token();
+    const s={name,isAdmin};
+    sessions.set(t,s);
+    return send(res,200,{token:t,user:s});
   }
+
   if(u.pathname==="/api/me"&&req.method==="GET"){const s=requireAuth(req,res);if(!s)return;return send(res,200,{user:s})}
   if(u.pathname==="/api/catalog"&&req.method==="GET")return send(res,200,{items:catalogPublic()});
   if(u.pathname==="/api/catalog"&&req.method==="POST"){
     const s=requireAuth(req,res);if(!s)return;if(!s.isAdmin)return send(res,403,{error:"Solo el administrador puede agregar películas."});
     const b=await body(req),title=clean(b.title,100),url=String(b.url||"").trim().slice(0,8000),image=String(b.image||"");
     if(!title||!url)return send(res,400,{error:"Falta el nombre o la URL de la película."});
-    if(image.length>6_000_000)return send(res,400,{error:"La imagen es demasiado grande. Usa una imagen más pequeña."});
     const id=crypto.randomUUID();catalog.set(id,{id,title,image,media:mediaFor(url),createdAt:Date.now()});return send(res,200,{items:catalogPublic()});
   }
   const del=u.pathname.match(/^\/api\/catalog\/([^/]+)$/);
