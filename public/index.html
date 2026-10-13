@@ -21,9 +21,6 @@ input:focus{border-color:var(--g);box-shadow:0 0 10px #39ff1433}
 .btn{border:1px solid var(--g);background:#071009;color:var(--g);padding:11px 15px;border-radius:11px;cursor:pointer;font-weight:800}
 .blue{border-color:var(--b);color:var(--b)}
 .red{border-color:var(--r);color:#ff5375}
-.center{min-height:80vh;display:grid;place-items:center}
-.landing{width:min(620px,100%);text-align:center}
-.actions{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:10px}
 .hidden{display:none!important}
 .catalog{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:13px}
 .moviecard{background:#0b0e14;border:1px solid #39ff1455;border-radius:15px;overflow:hidden}
@@ -58,40 +55,27 @@ input:focus{border-color:var(--g);box-shadow:0 0 10px #39ff1433}
 .fs .screen iframe,.fs .screen video{height:100%;width:100%;max-width:100%;max-height:100%;object-fit:contain;border:0}
 .fs .close{position:fixed;right:max(12px,env(safe-area-inset-right));top:max(12px,env(safe-area-inset-top));z-index:101;opacity:.65}
 .fs .close:focus,.fs .close:hover{opacity:1}
-@media(max-width:850px){.room{grid-template-columns:1fr}.adminform{grid-template-columns:1fr}.adminform .full{grid-column:auto}.actions{grid-template-columns:1fr}.catalog{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:850px){.room{grid-template-columns:1fr}.adminform{grid-template-columns:1fr}.adminform .full{grid-column:auto}.catalog{grid-template-columns:repeat(2,minmax(0,1fr))}}
 </style>
 </head>
 <body>
 <div class="app">
   <header class="top">
     <div class="logo">🎬 MPARTY</div>
-    <div id="userPill" class="pill hidden"></div>
+    <div id="userPill" class="pill">MARCIANO · ADMIN</div>
   </header>
 
-  <!-- LOGIN -->
-  <section id="login" class="center">
-    <div class="card landing">
-      <h1>🍿 PON TU NOMBRE Y CONTRASEÑA</h1>
-      <p>Inicia sesión para entrar a la cartelera y crear salas.</p>
-      <input id="loginName" maxlength="30" placeholder="Tu nombre">
-      <input id="loginPass" type="password" placeholder="Contraseña">
-      <button class="btn" style="width:100%;margin-top:8px" onclick="login()">ENTRAR</button>
-      <p class="notice">Administrador: MARCIANO</p>
-    </div>
-  </section>
-
   <!-- HOME / PAGINA PRINCIPAL -->
-  <section id="home" class="hidden">
+  <section id="home">
     <div class="card" style="margin-bottom:14px">
       <div class="row" style="justify-content:space-between;align-items:center">
         <div>
           <h1>🎞️ CARTELERA</h1>
-          <p style="margin:0 0 12px">Elige una opción para ver nuestro catálogo completo.</p>
+          <p style="margin:0 0 12px">Accede a nuestro catálogo completo de contenido.</p>
           <button class="btn blue" style="font-size:16px;padding:12px 20px" onclick="showSubPage()">🎬 PELÍCULAS Y SERIES</button>
         </div>
         <div class="row">
-          <button id="adminBtn" class="btn hidden" onclick="showAdmin()">⚙️ ADMINISTRADOR</button>
-          <button class="btn red" onclick="logout()">Salir</button>
+          <button class="btn" onclick="showAdmin()">⚙️ ADMINISTRADOR</button>
         </div>
       </div>
     </div>
@@ -119,12 +103,11 @@ input:focus{border-color:var(--g);box-shadow:0 0 10px #39ff1433}
         <button class="btn blue" onclick="showHome()">← Volver al Inicio</button>
       </div>
       <p>Explora y busca las películas disponibles para abrir en tu sala.</p>
-      <input id="searchBar" placeholder="🔍 Buscar película o serie por nombre..." oninput="filterCatalog()">
+      <input id="searchBar" placeholder="🔍 Buscar película o serie..." oninput="filterCatalog()">
     </div>
 
-    <!-- PANEL ADMIN PARA AGREGAR CONTENIDO DESDE LA SUB-PAGINA -->
-    <div id="subpageAdminAdd" class="card hidden" style="margin-bottom:14px">
-      <h2>➕ Agregar Película / Serie (Modo Admin)</h2>
+    <div class="card" style="margin-bottom:14px">
+      <h2>➕ Agregar Película / Serie</h2>
       <div class="adminform">
         <input id="subMovieTitle" placeholder="Nombre de la película o serie">
         <input id="subMovieUrl" placeholder="URL o código &lt;iframe&gt;">
@@ -143,7 +126,7 @@ input:focus{border-color:var(--g);box-shadow:0 0 10px #39ff1433}
         <h1>⚙️ ADMINISTRADOR</h1>
         <button class="btn blue" onclick="showHome()">← Inicio</button>
       </div>
-      <p>Gestión global de la cartelera.</p>
+      <p>Gestión global del catálogo.</p>
       <div class="adminform">
         <input id="movieTitle" placeholder="Nombre de la película">
         <input id="movieUrl" placeholder="URL o código &lt;iframe&gt;">
@@ -154,7 +137,7 @@ input:focus{border-color:var(--g);box-shadow:0 0 10px #39ff1433}
     </div>
   </section>
 
-  <!-- REPRODUCTOR / SALA -->
+  <!-- ROOM -->
   <section id="room" class="room hidden">
     <div class="movie">
       <div class="card">
@@ -194,14 +177,14 @@ input:focus{border-color:var(--g);box-shadow:0 0 10px #39ff1433}
   </section>
 </div>
 
-<!-- CONTENEDOR PANTALLA COMPLETA -->
+<!-- FULLSCREEN STAGE CONTAINER -->
 <div id="fs" class="fs hidden">
   <button class="btn red close" onclick="exitFull()" aria-label="Cerrar pantalla completa">✕</button>
   <div id="fsStage"></div>
 </div>
 
 <script>
-let me = JSON.parse(localStorage.getItem('mparty_user') || 'null');
+let me = { name: "MARCIANO", isAdmin: true };
 let room = '', userId = 'user_' + Math.random().toString(36).substring(2, 9), state = null, timer = null, mediaEl = null, lastMediaKey = '', screenPlaceholder = null;
 
 let catalogItems = JSON.parse(localStorage.getItem('mparty_catalog') || JSON.stringify([
@@ -210,47 +193,14 @@ let catalogItems = JSON.parse(localStorage.getItem('mparty_catalog') || JSON.str
 ]));
 
 const $ = id => document.getElementById(id);
-function esc(s) { return String(s || "").replace(/[&<>"']/g, x => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[x])) }
-
-function boot() {
-  if (!me) showLogin();
-  else showHome();
-}
-
-function login() {
-  const name = $('loginName').value.trim();
-  if (!name) return alert('Por favor escribe tu nombre.');
-  const isAdmin = (name.toUpperCase() === 'MARCIANO');
-  me = { name, isAdmin };
-  localStorage.setItem('mparty_user', JSON.stringify(me));
-  showHome();
-}
-
-function logout() {
-  localStorage.removeItem('mparty_user');
-  me = null;
-  showLogin();
-}
-
-function hideAll() {
-  ['login', 'home', 'subpage', 'admin', 'room'].forEach(x => $(x).classList.add('hidden'));
-}
-
-function showLogin() {
-  hideAll();
-  $('login').classList.remove('hidden');
-}
+function esc(s) { return String(s || "").replace(/[&<>"']/g, x => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;n}[x])) }
 
 function showHome() {
-  hideAll();
-  $('home').classList.remove('hidden');
-  $('userPill').classList.remove('hidden');$('userPill').textContent = me.name + (me.isAdmin ? ' · ADMIN' : '');
-  $('adminBtn').classList.toggle('hidden', !me.isAdmin);
+  ['home', 'subpage', 'admin', 'room'].forEach(x => $(x).classList.add('hidden'));$('home').classList.remove('hidden');
 }
 
 function showSubPage() {
-  hideAll();
-  $('subpage').classList.remove('hidden');$('subpageAdminAdd').classList.toggle('hidden', !me?.isAdmin);
+  ['home', 'subpage', 'admin', 'room'].forEach(x => $(x).classList.add('hidden'));$('subpage').classList.remove('hidden');
   renderSubCatalog(catalogItems);
 }
 
@@ -265,9 +215,7 @@ function renderSubCatalog(items) {
 }
 
 function showAdmin() {
-  if (!me?.isAdmin) return;
-  hideAll();
-  $('admin').classList.remove('hidden');
+  ['home', 'subpage', 'admin', 'room'].forEach(x => $(x).classList.add('hidden'));$('admin').classList.remove('hidden');
   loadAdmin();
 }
 
@@ -314,7 +262,7 @@ function enterRoomDirect(d) {
     media: d.media || { type: 'none', url: '' },
     messages: [{ id: 1, name: 'Sistema', text: '¡Bienvenido a la sala ' + room + '!' }]
   };
-  hideAll();
+  ['home', 'subpage', 'admin', 'room'].forEach(x => $(x).classList.add('hidden'));
   $('room').classList.remove('hidden');$('roomShow').textContent = room;
   render();
   clearInterval(timer);
@@ -449,9 +397,7 @@ document.addEventListener('fullscreenchange', () => {
   }
 });
 
-/* AGREGAR CONTENIDO DESDE LA SUBPAGINA */
 async function addMovieFromSub() {
-  if (!me?.isAdmin) return;
   const title = $('subMovieTitle').value.trim();
   const url = $('subMovieUrl').value.trim();
   const fileInput = $('subMovieImage').files[0];
@@ -474,9 +420,7 @@ async function addMovieFromSub() {
   alert('¡Película o serie agregada al catálogo!');
 }
 
-/* AGREGAR CONTENIDO DESDE EL ADMIN GENERAL */
 async function addMovie() {
-  if (!me?.isAdmin) return;
   const title = $('movieTitle').value.trim();
   const url = $('movieUrl').value.trim();
   const fileInput = $('movieImage').files[0];
@@ -505,4 +449,23 @@ function loadAdmin() {
       <img class="poster" src="${x.image || ''}" onerror="this.style.display='none'">
       <div class="moviebody">
         <h3>${esc(x.title)}</h3>
-        <div class
+        <div class="row">
+          <button class="btn red" onclick="deleteMovie('${x.id}')">Eliminar</button>
+        </div>
+      </div>
+    </article>
+  `).join('') || '<p>No hay películas.</p>';
+}
+
+function deleteMovie(id) {
+  if (!confirm('¿Eliminar esta película?')) return;
+  catalogItems = catalogItems.filter(x => x.id !== id);
+  localStorage.setItem('mparty_catalog', JSON.stringify(catalogItems));
+  loadAdmin();
+  if (!$('subpage').classList.contains('hidden')) renderSubCatalog(catalogItems);
+}
+
+showHome();
+</script>
+</body>
+</html>
