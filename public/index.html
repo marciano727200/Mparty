@@ -193,7 +193,7 @@ let catalogItems = JSON.parse(localStorage.getItem('mparty_catalog') || JSON.str
 ]));
 
 const $ = id => document.getElementById(id);
-function esc(s) { return String(s || "").replace(/[&<>"']/g, x => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;n}[x])) }
+function esc(s) { return String(s || "").replace(/[&<>"']/g, x => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[x])) }
 
 function showHome() {
   ['home', 'subpage', 'admin', 'room'].forEach(x => $(x).classList.add('hidden'));$('home').classList.remove('hidden');
