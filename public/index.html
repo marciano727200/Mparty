@@ -65,8 +65,8 @@ main{max-width:1200px;margin:auto;padding:10px 4px 86px}.page{display:none}.page
 .badge-resuelto{background:#39ff1433;color:#39ff14;border:1px solid #39ff14}
 .badge-finalizado{background:#8e969c33;color:#8e969c;border:1px solid #8e969c}
 
-.chatBox{background:#020303;border:1px solid #16353a;border-radius:8px;height:180px;overflow-y:auto;padding:8px;margin:8px 0;font-size:11px}
-.chatMsg{margin-bottom:6px;padding:4px 8px;border-radius:6px;max-width:85%}
+.chatBox{background:#020303;border:1px solid #16353a;border-radius:8px;height:200px;overflow-y:auto;padding:8px;margin:8px 0;font-size:11px}
+.chatMsg{margin-bottom:6px;padding:6px 10px;border-radius:6px;max-width:85%}
 .chatMsg.user{background:#0b1d20;color:#fff;margin-left:auto}
 .chatMsg.admin{background:#3b0713;color:#ff003c;margin-right:auto}
 
@@ -131,7 +131,7 @@ input,textarea,select{background:#05090a;color:var(--green)!important;border:1px
   </div>
  </section>
 
- <!-- Subpágina de Reportes (Vista General y Chat) -->
+ <!-- Subpágina de Reportes -->
  <section id="reports" class="page">
   <div class="panel">
    <h2>🚨 Centro de Soporte y Reportes</h2>
@@ -139,7 +139,7 @@ input,textarea,select{background:#05090a;color:var(--green)!important;border:1px
   </div>
  </section>
 
- <!-- Subpágina de Detalle de Chat para el Admin -->
+ <!-- Subpágina de Chat Activo para el Admin con un Usuario -->
  <section id="reportDetail" class="page">
   <div class="panel">
    <button class="serviceBtn" style="width:90px;margin-bottom:10px;background:#16353a;color:var(--green)!important" onclick="showPage('reports')">⬅️ Volver</button>
@@ -178,9 +178,7 @@ input,textarea,select{background:#05090a;color:var(--green)!important;border:1px
  </section>
 
  <section id="auth" class="page">
-  <div class="panel" id="authPanelContainer">
-   <!-- Se llena dinámicamente -->
-  </div>
+  <div class="panel" id="authPanelContainer"></div>
  </section>
 </main>
 
@@ -308,7 +306,7 @@ function editService(index){
   }
 }
 
-/* Lógica de Autenticación y Registro con Nombre */
+/* Lógica de Autenticación */
 function renderAuth(){
   const container = document.getElementById('authPanelContainer');
   if(currentUser){
@@ -394,7 +392,7 @@ function checkReportAccess(){
   renderReports();
 }
 
-/* Lógica de Reportes, Datos y Chat en Tiempo Real */
+/* Lógica de Reportes y Chat Unificado en Tiempo Real */
 function saveAndRenderReports(){
   localStorage.setItem('marciano_reports', JSON.stringify(reports));
   renderReports();
@@ -455,46 +453,53 @@ function renderReports(){
         </div>
       `;
     } else {
-      let badgeClass = 'badge-pendiente';
-      if(userReport.status === 'En Proceso') badgeClass = 'badge-proceso';
-      if(userReport.status === 'Resuelto') badgeClass = 'badge-resuelto';
-      if(userReport.status === 'Finalizado') badgeClass = 'badge-finalizado';
-
-      let chatHtml = '';
-      if(userReport.messages && userReport.messages.length > 0){
-        userReport.messages.forEach(m => {
-          chatHtml += `<div class="chatMsg ${m.sender}"><b>${m.name}:</b> ${m.text}</div>`;
-        });
-      } else {
-        chatHtml = `<div style="font-size:10px;color:#8e969c;text-align:center">Sin mensajes aún.</div>`;
-      }
-
-      let chatInputArea = `
-        <div style="display:flex;gap:5px;margin-top:8px">
-          <input id="userMsgInput" placeholder="Escribe un mensaje..." style="margin-top:0;font-size:10px;padding:6px">
-          <button class="serviceBtn" style="width:70px;margin-top:0" onclick="sendUserMsg()">Enviar</button>
-        </div>
-      `;
-
-      if(userReport.status === 'Finalizado'){
-        chatInputArea = `<div style="font-size:11px;color:#ff003c;text-align:center;margin-top:10px">🔒 Este chat ha sido finalizado por el administrador.</div>`;
-      }
-
-      container.innerHTML = `
-        <div class="reportCard">
-          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
-            <b style="font-size:12px;color:var(--cyan)">Tu Reporte Activo</b>
-            <span class="badge ${badgeClass}">${userReport.status}</span>
-          </div>
-          <p style="font-size:11px;margin:0 0 4px;color:#fff">📝 <b>Detalle:</b> ${userReport.text}</p>
-          <div style="font-size:10px;color:#8e969c;margin-bottom:8px">📅 Fecha: ${userReport.buyDate} | 📱 WhatsApp: ${userReport.whatsapp}</div>
-          
-          <div class="chatBox" id="userChatBox">${chatHtml}</div>
-          ${chatInputArea}
-        </div>
-      `;
+      renderUserChatInterface(userReport, container);
     }
   }
+}
+
+function renderUserChatInterface(userReport, container){
+  let badgeClass = 'badge-pendiente';
+  if(userReport.status === 'En Proceso') badgeClass = 'badge-proceso';
+  if(userReport.status === 'Resuelto') badgeClass = 'badge-resuelto';
+  if(userReport.status === 'Finalizado') badgeClass = 'badge-finalizado';
+
+  let chatHtml = '';
+  if(userReport.messages && userReport.messages.length > 0){
+    userReport.messages.forEach(m => {
+      chatHtml += `<div class="chatMsg ${m.sender}"><b>${m.name}:</b> ${m.text}</div>`;
+    });
+  } else {
+    chatHtml = `<div style="font-size:10px;color:#8e969c;text-align:center">Sin mensajes aún.</div>`;
+  }
+
+  let chatInputArea = `
+    <div style="display:flex;gap:5px;margin-top:8px">
+      <input id="userMsgInput" placeholder="Escribe un mensaje..." style="margin-top:0;font-size:10px;padding:6px" onkeypress="if(event.key==='Enter') sendUserMsg()">
+      <button class="serviceBtn" style="width:70px;margin-top:0" onclick="sendUserMsg()">Enviar</button>
+    </div>
+  `;
+
+  if(userReport.status === 'Finalizado'){
+    chatInputArea = `<div style="font-size:11px;color:#ff003c;text-align:center;margin-top:10px">🔒 Este chat ha sido finalizado por el administrador.</div>`;
+  }
+
+  container.innerHTML = `
+    <div class="reportCard">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+        <b style="font-size:12px;color:var(--cyan)">Tu Chat de Soporte</b>
+        <span class="badge ${badgeClass}">${userReport.status}</span>
+      </div>
+      <p style="font-size:11px;margin:0 0 4px;color:#fff">📝 <b>Detalle:</b> ${userReport.text}</p>
+      <div style="font-size:10px;color:#8e969c;margin-bottom:8px">📅 Fecha: ${userReport.buyDate} | 📱 WhatsApp: ${userReport.whatsapp}</div>
+      
+      <div class="chatBox" id="sharedChatBox">${chatHtml}</div>
+      ${chatInputArea}
+    </div>
+  `;
+  
+  let box = document.getElementById('sharedChatBox');
+  if(box) box.scrollTop = box.scrollHeight;
 }
 
 function createUserReport(){
@@ -533,7 +538,7 @@ function sendUserMsg(){
   saveAndRenderReports();
 }
 
-/* Subpágina de Chat en Tiempo Real para el Admin */
+/* Subpágina de Chat para el Administrador */
 function openAdminChat(email){
   let report = reports.find(r => r.userEmail === email);
   if(!report) return;
@@ -565,10 +570,10 @@ function openAdminChat(email){
     </div>
     <p style="font-size:11px;color:#fff;margin:0 0 10px">📝 <b>Reporte:</b> ${report.text}</p>
 
-    <div class="chatBox" id="adminChatBox">${chatHtml}</div>
+    <div class="chatBox" id="adminSharedChatBox">${chatHtml}</div>
 
     <div style="display:flex;gap:5px;margin-bottom:10px">
-      <input id="adminMsgInput" placeholder="Escribe mensaje..." style="margin-top:0;font-size:10px;padding:6px">
+      <input id="adminMsgInput" placeholder="Escribe mensaje..." style="margin-top:0;font-size:10px;padding:6px" onkeypress="if(event.key==='Enter') sendAdminMsg('${email}')">
       <button class="serviceBtn" style="width:70px;margin-top:0" onclick="sendAdminMsg('${email}')">Enviar</button>
     </div>
 
@@ -579,6 +584,9 @@ function openAdminChat(email){
       <button onclick="deleteAdminReport('${email}')" style="background:#ff003c;color:#fff;border:0;font-size:9px;padding:5px 10px;border-radius:4px;margin-left:auto">🗑️ Eliminar</button>
     </div>
   `;
+
+  let box = document.getElementById('adminSharedChatBox');
+  if(box) box.scrollTop = box.scrollHeight;
 }
 
 function sendAdminMsg(email){
@@ -617,15 +625,24 @@ setInterval(() => {
   let latestReports = JSON.parse(localStorage.getItem('marciano_reports')) || [];
   if(JSON.stringify(latestReports) !== JSON.stringify(reports)){
     reports = latestReports;
-    if(document.getElementById('reports').classList.contains('active')){
-      renderReports();
-    }
-    if(document.getElementById('reportDetail').classList.contains('active')){
-      // Mantener la vista de chat abierta si el admin está en ella
-      let activeDetail = document.querySelector('#reportDetailContent h3');
-      if(activeDetail){
-        let currentEmailMatch = activeDetail.innerText.match(/Chat con: (.*)/);
-        // Si hay una manera sencilla de refrescar, actualizamos
+    if(currentUser){
+      if(!isAdmin && document.getElementById('reports').classList.contains('active')){
+        let userReport = reports.find(r => r.userEmail === currentUser.email);
+        let container = document.getElementById('reportsContentArea');
+        if(userReport && container) renderUserChatInterface(userReport, container);
+      }
+      if(isAdmin && document.getElementById('reports').classList.contains('active')){
+        renderReports();
+      }
+      if(isAdmin && document.getElementById('reportDetail').classList.contains('active')){
+        let activeTitle = document.querySelector('#reportDetailContent h3');
+        if(activeTitle){
+          let match = activeTitle.innerText.match(/Chat con: (.*)/);
+          if(match){
+            let rep = reports.find(r => r.clientName === match[1]);
+            if(rep) openAdminChat(rep.userEmail);
+          }
+        }
       }
     }
   }
