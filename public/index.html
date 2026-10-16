@@ -37,18 +37,19 @@ main{max-width:1200px;margin:auto;padding:10px 4px 86px}.page{display:none}.page
 
 .serviceCard{
  aspect-ratio: 1 / 1;
- border-radius:10px;padding:6px;text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:space-between;
+ border-radius:10px;padding:5px;text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:space-between;
  background:linear-gradient(#050808,#050808) padding-box, linear-gradient(120deg,#ff003c,#ffea00,#00e5ff,#b000ff,#ff007f,#39ff14,#ff003c) border-box;
  border:2px solid transparent;background-size:auto,300% 300%;animation:rgbBorder 5s linear infinite;
  box-shadow:0 0 8px rgba(57,255,20,0.15);cursor:pointer;
 }
 
-.serviceLogoBox{width:36px;height:36px;border-radius:6px;background:#020303;border:1px solid var(--green);display:grid;place-items:center;overflow:hidden;box-shadow:0 0 5px #39ff1444}
+.serviceLogoBox{width:30px;height:30px;border-radius:5px;background:#020303;border:1px solid var(--green);display:grid;place-items:center;overflow:hidden;box-shadow:0 0 4px #39ff1444}
 .serviceLogoBox img{width:100%;height:100%;object-fit:cover;background:#000}
 
-.serviceName{font-size:7.5px;font-weight:900;color:var(--green);text-shadow:0 0 3px #39ff14;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;width:100%}
-.servicePrice{font-size:9.5px;font-weight:900;color:#fff;text-shadow:0 0 4px #00e5ff;white-space:pre-line;line-height:1.15;max-height:26px;overflow:hidden}
-.serviceBtn{width:100%;padding:3px;background:var(--green);color:#000;border:0;border-radius:4px;font-weight:900;font-size:8px;text-align:center;display:block}
+.serviceName{font-size:7px;font-weight:900;color:var(--green);text-shadow:0 0 3px #39ff14;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;width:100%;margin:1px 0}
+.serviceDesc{font-size:6px;color:#a9afb4;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;width:100%;margin:1px 0}
+.servicePrice{font-size:8.5px;font-weight:900;color:#fff;text-shadow:0 0 4px #00e5ff;white-space:pre-line;line-height:1.1;max-height:22px;overflow:hidden;margin:1px 0}
+.serviceBtn{width:100%;padding:3px;background:var(--green);color:#000;border:0;border-radius:4px;font-weight:900;font-size:7.5px;text-align:center;display:block}
 
 .adminBox{margin-top:15px;padding:12px;border:1px dashed var(--red);border-radius:12px;background:rgba(255,0,60,0.05)}
 .adminBox h3{margin:0 0 8px;color:var(--red);font-size:14px}
@@ -97,10 +98,12 @@ input,textarea,select{background:#05090a;color:var(--green)!important;border:1px
 
    <div id="adminPanel" class="adminBox hidden">
     <h3>⚙️ Panel de Administración (Gestión de Servicios)</h3>
-    <p style="font-size:11px;color:#a9afb4;margin-bottom:8px">Agrega productos, precios con salto de línea (Enter) y enlace de compra:</p>
+    <p style="font-size:11px;color:#a9afb4;margin-bottom:8px">Agrega nombre, descripción corta, precio (con Enter), enlace y logo:</p>
     <input id="newServiceName" placeholder="Nombre (ej. Netflix)">
-    <textarea id="newServicePrice" placeholder="Precio (puedes dar Enter para varios precios)" style="height:60px;resize:none;margin-top:5px"></textarea>
+    <input id="newServiceDesc" placeholder="Descripción corta (ej. Cuenta 1 Dispositivo)" style="margin-top:5px">
+    <textarea id="newServicePrice" placeholder="Precio (puedes dar Enter para varios precios)" style="height:50px;resize:none;margin-top:5px"></textarea>
     <input id="newServiceLink" placeholder="Enlace de compra (ej. https://wa.me/...)" style="margin-top:5px">
+    <input id="newServiceLogo" placeholder="URL de la imagen del logo (opcional)" style="margin-top:5px">
     <button class="serviceBtn" style="margin-top:8px;background:var(--red);color:#fff!important;padding:8px" onclick="addService()">➕ Agregar Producto</button>
     
     <div style="margin-top:12px">
@@ -166,61 +169,33 @@ input,textarea,select{background:#05090a;color:var(--green)!important;border:1px
 let isAdmin = localStorage.getItem('marciano_admin') === 'true';
 
 let services = JSON.parse(localStorage.getItem('marciano_services')) || [
-  { name: 'NETFLIX', price: '$25', link: '#' },
-  { name: 'DISNEY', price: '$15', link: '#' },
-  { name: 'HBO MAX', price: '$30', link: '#' },
-  { name: 'PRIME VIDEO', price: '$35', link: '#' },
-  { name: 'VIX', price: '$20', link: '#' },
-  { name: 'PARAMOUNT', price: '$120', link: '#' },
-  { name: 'CRUNCHYROLL', price: '$25', link: '#' },
-  { name: 'UNIVERSAL', price: '$70', link: '#' },
-  { name: 'APPLE TV', price: '$5', link: '#' },
-  { name: 'FOX ONE', price: '$15', link: '#' },
-  { name: 'SPOTIFY 1M', price: '$50', link: '#' },
-  { name: 'SPOTIFY 4M', price: '$125', link: '#' },
-  { name: 'YOUTUBE PREMIUM', price: '$25', link: '#' },
-  { name: 'APPLE MUSIC', price: '$25', link: '#' },
-  { name: 'PORN HUB', price: '$45', link: '#' },
-  { name: 'CANVA PRO', price: '$30', link: '#' },
-  { name: 'CAPCUT PRO', price: '$75', link: '#' },
-  { name: 'GEMINI PRO', price: '$100', link: '#' },
-  { name: 'CHAT GPT', price: '$75', link: '#' },
-  { name: 'ADOBE', price: '1M $25\n2M $50', link: '#' },
-  { name: 'FACEBOOK', price: '$70', link: '#' },
-  { name: 'INSTAGRAM', price: '$100', link: '#' },
-  { name: 'TIKTOK', price: '$85', link: '#' },
-  { name: 'FREE FIRE', price: 'POR ID', link: '#' },
-  { name: 'MINECRAFT', price: '$50', link: '#' },
-  { name: 'ROBLOX', price: 'VARIOS', link: '#' }
+  { name: 'NETFLIX', desc: '1 Pantalla HD', price: '$25', link: '#', logo: 'https://images.unsplash.com/photo-1574375927938-d5a98e8ffe85?w=150' },
+  { name: 'DISNEY', desc: 'Acceso Completo', price: '$15', link: '#', logo: 'https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?w=150' },
+  { name: 'HBO MAX', desc: '4K Ultra HD', price: '$30', link: '#', logo: 'https://images.unsplash.com/photo-1594909122845-11baa439b7bf?w=150' },
+  { name: 'PRIME VIDEO', desc: 'Originales y Series', price: '$35', link: '#', logo: 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=150' },
+  { name: 'VIX', desc: 'Streaming Total', price: '$20', link: '#', logo: 'https://images.unsplash.com/photo-1512070679273-8962cc32bcff?w=150' },
+  { name: 'PARAMOUNT', desc: 'Cine y Series', price: '$120', link: '#', logo: 'https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=150' },
+  { name: 'CRUNCHYROLL', desc: 'Anime Sin Anuncios', price: '$25', link: '#', logo: 'https://images.unsplash.com/photo-1534447677768-be436bb09401?w=150' },
+  { name: 'UNIVERSAL', desc: 'Estrenos', price: '$70', link: '#', logo: 'https://images.unsplash.com/photo-1508739773434-c26b3d09e071?w=150' },
+  { name: 'APPLE TV', desc: 'Apple Originals', price: '$5', link: '#', logo: 'https://images.unsplash.com/photo-1611186871348-b1ce696e52c9?w=150' },
+  { name: 'FOX ONE', desc: 'En Vivo', price: '$15', link: '#', logo: 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=150' },
+  { name: 'SPOTIFY 1M', desc: 'Individual', price: '$50', link: '#', logo: 'https://images.unsplash.com/photo-1614680376593-902f749f7ffc?w=150' },
+  { name: 'SPOTIFY 4M', desc: 'Familiar', price: '$125', link: '#', logo: 'https://images.unsplash.com/photo-1614680376593-902f749f7ffc?w=150' },
+  { name: 'YOUTUBE PREMIUM', desc: 'Sin Anuncios + Music', price: '$25', link: '#', logo: 'https://images.unsplash.com/photo-1611162617474-5b21e879e113?w=150' },
+  { name: 'APPLE MUSIC', desc: 'Lossless Audio', price: '$25', link: '#', logo: 'https://images.unsplash.com/photo-1611186871348-b1ce696e52c9?w=150' },
+  { name: 'PORN HUB', desc: 'Premium Pass', price: '$45', link: '#', logo: 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=150' },
+  { name: 'CANVA PRO', desc: 'Diseño Ilimitado', price: '$30', link: '#', logo: 'https://images.unsplash.com/photo-1626785774573-4b799315345d?w=150' },
+  { name: 'CAPCUT PRO', desc: 'Efectos Pro', price: '$75', link: '#', logo: 'https://images.unsplash.com/photo-1574717024653-61fd2cf4d44d?w=150' },
+  { name: 'GEMINI PRO', desc: 'Inteligencia Avanzada', price: '$100', link: '#', logo: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=150' },
+  { name: 'CHAT GPT', desc: 'GPT-4 Plus', price: '$75', link: '#', logo: 'https://images.unsplash.com/photo-1677442136019-21780efad99a?w=150' },
+  { name: 'ADOBE', desc: 'Creative Cloud', price: '1M $25\n2M $50', link: '#', logo: 'https://images.unsplash.com/photo-1626785774625-ddcddc3445e9?w=150' },
+  { name: 'FACEBOOK', desc: 'Seguidores Reales', price: '$70', link: '#', logo: 'https://images.unsplash.com/photo-1562577309-4932fdd64cd1?w=150' },
+  { name: 'INSTAGRAM', desc: 'Likes y Seguidores', price: '$100', link: '#', logo: 'https://images.unsplash.com/photo-1611262588024-d12430b98920?w=150' },
+  { name: 'TIKTOK', desc: 'Vistas y Seguidores', price: '$85', link: '#', logo: 'https://images.unsplash.com/photo-1611605698335-8b1569810432?w=150' },
+  { name: 'FREE FIRE', desc: 'Recarga Directa', price: 'POR ID', link: '#', logo: 'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=150' },
+  { name: 'MINECRAFT', desc: 'Bedrock / Java', price: '$50', link: '#', logo: 'https://images.unsplash.com/photo-1627856013091-fed6e4e302e3?w=150' },
+  { name: 'ROBLOX', desc: 'Tarjetas y Robux', price: 'VARIOS', link: '#', logo: 'https://images.unsplash.com/photo-1612287230202-1ff1d85d1bdf?w=150' }
 ];
-
-function getServiceLogo(name){
-  const n = name.toUpperCase();
-  if(n.includes('NETFLIX')) return 'https://images.unsplash.com/photo-1574375927938-d5a98e8ffe85?w=150';
-  if(n.includes('DISNEY')) return 'https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?w=150';
-  if(n.includes('MAX') || n.includes('HBO')) return 'https://images.unsplash.com/photo-1594909122845-11baa439b7bf?w=150';
-  if(n.includes('PRIME')) return 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=150';
-  if(n.includes('VIX')) return 'https://images.unsplash.com/photo-1512070679273-8962cc32bcff?w=150';
-  if(n.includes('PARAMOUNT')) return 'https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=150';
-  if(n.includes('CRUNCHYROLL')) return 'https://images.unsplash.com/photo-1534447677768-be436bb09401?w=150';
-  if(n.includes('UNIVERSAL')) return 'https://images.unsplash.com/photo-1508739773434-c26b3d09e071?w=150';
-  if(n.includes('APPLE')) return 'https://images.unsplash.com/photo-1611186871348-b1ce696e52c9?w=150';
-  if(n.includes('SPOTIFY')) return 'https://images.unsplash.com/photo-1614680376593-902f749f7ffc?w=150';
-  if(n.includes('YOUTUBE')) return 'https://images.unsplash.com/photo-1611162617474-5b21e879e113?w=150';
-  if(n.includes('PORN')) return 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=150';
-  if(n.includes('CANVA')) return 'https://images.unsplash.com/photo-1626785774573-4b799315345d?w=150';
-  if(n.includes('CAPCUT')) return 'https://images.unsplash.com/photo-1574717024653-61fd2cf4d44d?w=150';
-  if(n.includes('GEMINI')) return 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=150';
-  if(n.includes('CHAT GPT')) return 'https://images.unsplash.com/photo-1677442136019-21780efad99a?w=150';
-  if(n.includes('ADOBE')) return 'https://images.unsplash.com/photo-1626785774625-ddcddc3445e9?w=150';
-  if(n.includes('FACEBOOK')) return 'https://images.unsplash.com/photo-1562577309-4932fdd64cd1?w=150';
-  if(n.includes('INSTAGRAM')) return 'https://images.unsplash.com/photo-1611262588024-d12430b98920?w=150';
-  if(n.includes('TIKTOK')) return 'https://images.unsplash.com/photo-1611605698335-8b1569810432?w=150';
-  if(n.includes('FREE FIRE')) return 'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=150';
-  if(n.includes('MINECRAFT')) return 'https://images.unsplash.com/photo-1627856013091-fed6e4e302e3?w=150';
-  if(n.includes('ROBLOX')) return 'https://images.unsplash.com/photo-1612287230202-1ff1d85d1bdf?w=150';
-  return 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=150';
-}
 
 function saveAndRender(){
   localStorage.setItem('marciano_services', JSON.stringify(services));
@@ -234,13 +209,15 @@ function renderServices(){
   adminList.innerHTML = '';
 
   services.forEach((s, index) => {
-    const logoUrl = getServiceLogo(s.name);
+    const logoUrl = s.logo || 'https://api.iconify.design/lucide:tv.svg?color=%2339ff14';
     const targetLink = s.link && s.link !== '#' ? s.link : `https://wa.me/?text=Hola,%20quiero%20adquirir%20${encodeURIComponent(s.name)}`;
+    const descHtml = s.desc ? `<div class="serviceDesc">${s.desc}</div>` : '';
     
     container.innerHTML += `
       <div class="serviceCard">
-       <div class="serviceLogoBox"><img src="${logoUrl}" alt="${s.name}" onerror="this.src='https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=150'"></div>
+       <div class="serviceLogoBox"><img src="${logoUrl}" alt="${s.name}" onerror="this.src='https://api.iconify.design/lucide:tv.svg?color=%2339ff14'"></div>
        <div class="serviceName">${s.name}</div>
+       ${descHtml}
        <div class="servicePrice">${s.price}</div>
        <a href="${targetLink}" target="_blank" class="serviceBtn">Adquirir</a>
       </div>
@@ -265,13 +242,17 @@ function renderServices(){
 function addService(){
   if(!isAdmin) return alert('Acceso denegado.');
   const name = document.getElementById('newServiceName').value.trim();
+  const desc = document.getElementById('newServiceDesc').value.trim();
   const price = document.getElementById('newServicePrice').value.trim();
   const link = document.getElementById('newServiceLink').value.trim() || '#';
-  if(!name || !price) return alert('Llena el nombre y el precio.');
-  services.push({ name, price, link });
+  const logo = document.getElementById('newServiceLogo').value.trim();
+  if(!name || !price) return alert('Llena al menos el nombre y el precio.');
+  services.push({ name, desc, price, link, logo });
   document.getElementById('newServiceName').value = '';
+  document.getElementById('newServiceDesc').value = '';
   document.getElementById('newServicePrice').value = '';
   document.getElementById('newServiceLink').value = '';
+  document.getElementById('newServiceLogo').value = '';
   saveAndRender();
 }
 
@@ -286,10 +267,12 @@ function deleteService(index){
 function editService(index){
   if(!isAdmin) return;
   const newName = prompt('Nuevo nombre:', services[index].name);
+  const newDesc = prompt('Nueva descripción corta:', services[index].desc || '');
   const newPrice = prompt('Nuevo precio (puedes usar Enter):', services[index].price);
   const newLink = prompt('Nuevo enlace de compra:', services[index].link || '#');
+  const newLogo = prompt('Nueva URL de la imagen del logo:', services[index].logo || '');
   if(newName && newPrice){
-    services[index] = { name: newName, price: newPrice, link: newLink };
+    services[index] = { name: newName, desc: newDesc, price: newPrice, link: newLink, logo: newLogo };
     saveAndRender();
   }
 }
