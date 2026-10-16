@@ -226,10 +226,6 @@ let services = JSON.parse(localStorage.getItem('marciano_services')) || [
 
 let reports = JSON.parse(localStorage.getItem('marciano_reports')) || [];
 
-// Limpiar reportes huérfanos o con datos antiguos indefinidos
-reports = reports.filter(r => r.userEmail && r.userEmail !== 'undefined');
-localStorage.setItem('marciano_reports', JSON.stringify(reports));
-
 function saveAndRenderServices(){
   localStorage.setItem('marciano_services', JSON.stringify(services));
   renderServices();
@@ -310,7 +306,7 @@ function editService(index){
   }
 }
 
-/* Lógica de Autenticación */
+/* Lógica de Autenticación con Registro e Inicio de Sesión separados */
 function renderAuth(){
   const container = document.getElementById('authPanelContainer');
   if(currentUser){
@@ -322,23 +318,44 @@ function renderAuth(){
     `;
   } else {
     container.innerHTML = `
-      <<h2>👤 Registro / Iniciar Sesión</h2>
-      <p style="font-size:11px;color:#a9afb4">Regístrate con tu nombre o inicia sesión:</p>
-      <input id="authName" placeholder="Tu Nombre" style="margin-bottom:5px">
-      <input id="authEmail" placeholder="Correo electrónico" style="margin-bottom:5px">
-      <input id="authPass" type="password" placeholder="Contraseña">
-      <div style="display:flex;gap:8px;margin-top:10px">
+      <h2>👤 Mi Cuenta</h2>
+      <div style="display:flex;gap:5px;margin-bottom:12px">
+        <button class="serviceBtn" style="background:#16353a;color:var(--green)!important;padding:6px;font-size:9px" onclick="switchAuthTab('login')">🔑 Iniciar Sesión</button>
+        <button class="serviceBtn" style="background:#16353a;color:var(--green)!important;padding:6px;font-size:9px" onclick="switchAuthTab('register')">📝 Registrarse</button>
+      </div>
+
+      <div id="loginForm">
+        <p style="font-size:11px;color:#a9afb4;margin-bottom:6px">Ingresa con tu correo y contraseña:</p>
+        <input id="loginEmail" placeholder="Correo electrónico" style="margin-bottom:5px">
+        <input id="loginPass" type="password" placeholder="Contraseña" style="margin-bottom:8px">
         <button class="serviceBtn" style="padding:10px;font-weight:900" onclick="handleLogin()">Iniciar Sesión</button>
+      </div>
+
+      <div id="registerForm" class="hidden">
+        <p style="font-size:11px;color:#a9afb4;margin-bottom:6px">Crea una cuenta nueva:</p>
+        <input id="regName" placeholder="Tu Nombre" style="margin-bottom:5px">
+        <input id="regEmail" placeholder="Correo electrónico" style="margin-bottom:5px">
+        <input id="regPass" type="password" placeholder="Contraseña" style="margin-bottom:8px">
         <button class="serviceBtn" style="background:#16353a;color:var(--green)!important;padding:10px;font-weight:900" onclick="handleRegister()">Registrarse</button>
       </div>
     `;
   }
 }
 
+function switchAuthTab(tab){
+  if(tab === 'login'){
+    document.getElementById('loginForm').classList.remove('hidden');
+    document.getElementById('registerForm').classList.add('hidden');
+  } else {
+    document.getElementById('loginForm').classList.add('hidden');
+    document.getElementById('registerForm').classList.remove('hidden');
+  }
+}
+
 function handleRegister(){
-  const name = document.getElementById('authName').value.trim();
-  const email = document.getElementById('authEmail').value.trim();
-  const pass = document.getElementById('authPass').value.trim();
+  const name = document.getElementById('regName').value.trim();
+  const email = document.getElementById('regEmail').value.trim();
+  const pass = document.getElementById('regPass').value.trim();
   if(!name || !email || !pass) return alert('Por favor llena todos los campos.');
   
   let users = JSON.parse(localStorage.getItem('marciano_users')) || [];
@@ -347,17 +364,15 @@ function handleRegister(){
   users.push({ name, email, pass });
   localStorage.setItem('marciano_users', JSON.stringify(users));
   alert('¡Registro exitoso! Ahora inicia sesión.');
-  document.getElementById('authName').value = '';
-  document.getElementById('authEmail').value = '';
-  document.getElementById('authPass').value = '';
+  switchAuthTab('login');
 }
 
 function handleLogin(){
-  const email = document.getElementById('authEmail').value.trim();
-  const pass = document.getElementById('authPass').value.trim();
+  const email = document.getElementById('loginEmail').value.trim();
+  const pass = document.getElementById('loginPass').value.trim();
 
   if(email === 'm@m.m' && pass === 'admin'){
-    currentUser = { name: 'Administrador', email: 'm@m.m' };
+    currentUser = { name: 'MARCIANO', email: 'm@m.m' };
     isAdmin = true;
   } else {
     let users = JSON.parse(localStorage.getItem('marciano_users')) || [];
@@ -396,7 +411,7 @@ function checkReportAccess(){
   renderReports();
 }
 
-/* Lógica de Reportes y Chat Unificado en Tiempo Real */
+/* Lógica de Reportes y Chat con recepción garantizada */
 function saveAndRenderReports(){
   localStorage.setItem('marciano_reports', JSON.stringify(reports));
   renderReports();
@@ -544,7 +559,7 @@ function sendUserMsg(){
   saveAndRenderReports();
 }
 
-/* Subpágina de Chat para el Administrador */
+/* Chat del Administrador */
 function openAdminChat(email){
   let report = reports.find(r => r.userEmail === email);
   if(!report) return;
@@ -604,7 +619,7 @@ function sendAdminMsg(email){
   if(!report) return;
 
   if(!report.messages) report.messages = [];
-  report.messages.push({ name: 'Administrador', sender: 'admin', text: text });
+  report.messages.push({ name: 'MARCIANO', sender: 'admin', text: text });
   input.value = '';
   saveAndRenderReports();
   openAdminChat(email);
