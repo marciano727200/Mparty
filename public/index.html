@@ -139,7 +139,7 @@ input,textarea,select{background:#05090a;color:var(--green)!important;border:1px
   </div>
  </section>
 
- <!-- Subpágina de Chat Activo para el Admin con un Usuario -->
+ <!-- Subpágina de Chat Activo para el Admin -->
  <section id="reportDetail" class="page">
   <div class="panel">
    <button class="serviceBtn" style="width:90px;margin-bottom:10px;background:#16353a;color:var(--green)!important" onclick="showPage('reports')">⬅️ Volver</button>
@@ -225,6 +225,10 @@ let services = JSON.parse(localStorage.getItem('marciano_services')) || [
 ];
 
 let reports = JSON.parse(localStorage.getItem('marciano_reports')) || [];
+
+// Limpiar reportes huérfanos o con datos antiguos indefinidos
+reports = reports.filter(r => r.userEmail && r.userEmail !== 'undefined');
+localStorage.setItem('marciano_reports', JSON.stringify(reports));
 
 function saveAndRenderServices(){
   localStorage.setItem('marciano_services', JSON.stringify(services));
@@ -318,7 +322,7 @@ function renderAuth(){
     `;
   } else {
     container.innerHTML = `
-      <h2>👤 Registro / Iniciar Sesión</h2>
+      <<h2>👤 Registro / Iniciar Sesión</h2>
       <p style="font-size:11px;color:#a9afb4">Regístrate con tu nombre o inicia sesión:</p>
       <input id="authName" placeholder="Tu Nombre" style="margin-bottom:5px">
       <input id="authEmail" placeholder="Correo electrónico" style="margin-bottom:5px">
@@ -407,8 +411,10 @@ function renderReports(){
   if(isAdmin){
     let userMap = {};
     reports.forEach(r => {
-      if(!userMap[r.userEmail]) userMap[r.userEmail] = [];
-      userMap[r.userEmail].push(r);
+      if(r.userEmail && r.userEmail !== 'undefined'){
+        if(!userMap[r.userEmail]) userMap[r.userEmail] = [];
+        userMap[r.userEmail].push(r);
+      }
     });
 
     let keys = Object.keys(userMap);
@@ -433,7 +439,7 @@ function renderReports(){
             <span class="badge ${badgeClass}">${lastReport.status}</span>
           </div>
           <p style="font-size:11px;color:#fff;margin:4px 0">📝 ${lastReport.text}</p>
-          <div style="font-size:10px;color:#8e969c">📅 Compra: ${lastReport.buyDate} | 📱 WhatsApp: ${lastReport.whatsapp}</div>
+          <div style="font-size:10px;color:#8e969c">📅 Compra: ${lastReport.buyDate || 'N/D'} | 📱 WhatsApp: ${lastReport.whatsapp || 'N/D'}</div>
         </div>
       `;
     });
@@ -562,7 +568,7 @@ function openAdminChat(email){
 
   detailContainer.innerHTML = `
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
-      <h3 style="font-size:14px;margin:0;color:var(--cyan)">Chat con: ${report.clientName}</h3>
+      <h3 style="font-size:14px;margin:0;color:var(--cyan)">Chat con: ${report.clientName || email}</h3>
       <span class="badge ${badgeClass}" id="adminReportStatus">${report.status}</span>
     </div>
     <div style="font-size:11px;color:#a9afb4;margin-bottom:8px">
@@ -639,7 +645,7 @@ setInterval(() => {
         if(activeTitle){
           let match = activeTitle.innerText.match(/Chat con: (.*)/);
           if(match){
-            let rep = reports.find(r => r.clientName === match[1]);
+            let rep = reports.find(r => r.clientName === match[1] || r.userEmail === match[1]);
             if(rep) openAdminChat(rep.userEmail);
           }
         }
