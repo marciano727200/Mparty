@@ -33,23 +33,25 @@ main{max-width:1200px;margin:auto;padding:10px 4px 86px}.page{display:none}.page
 
 .servicesTitle{font-size:16px;font-weight:900;margin:12px 0 8px;color:var(--green);text-shadow:0 0 8px #39ff14}
 
-/* 4 COLUMNAS FORZADAS A LA FUERZA EN MÓVIL Y PC */
-.servicesGrid{display:grid !important;grid-template-columns: repeat(4, 1fr) !important;gap:5px !important;margin-top:8px}
+/* 4 COLUMNAS CON TARJETAS CUADRADAS PERFECTAS */
+.servicesGrid{display:grid !important;grid-template-columns: repeat(4, 1fr) !important;gap:6px !important;margin-top:8px}
+@media(max-width:600px){.servicesGrid{grid-template-columns: repeat(3, 1fr) !important;}}
 
 .serviceCard{
- min-height:120px;border-radius:10px;padding:5px;text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:space-between;
+ aspect-ratio: 1 / 1; /* CUADRADO PERFECTO */
+ border-radius:10px;padding:6px;text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:space-between;
  background:linear-gradient(#050808,#050808) padding-box, linear-gradient(120deg,#ff003c,#ffea00,#00e5ff,#b000ff,#ff007f,#39ff14,#ff003c) border-box;
  border:2px solid transparent;background-size:auto,300% 300%;animation:rgbBorder 5s linear infinite;
  box-shadow:0 0 8px rgba(57,255,20,0.15);cursor:pointer;
 }
 
-/* LOGO CUADRADO COMPACTO */
-.serviceLogoBox{width:36px;height:36px;border-radius:6px;background:#020303;border:1px solid var(--green);display:grid;place-items:center;overflow:hidden;box-shadow:0 0 6px #39ff1444}
+/* LOGO CUADRADO INTERNO */
+.serviceLogoBox{width:34px;height:34px;border-radius:6px;background:#020303;border:1px solid var(--green);display:grid;place-items:center;overflow:hidden;box-shadow:0 0 5px #39ff1444}
 .serviceLogoBox img{width:100%;height:100%;object-fit:cover}
 
-.serviceName{font-size:9px;font-weight:900;color:var(--green);text-shadow:0 0 4px #39ff14;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;width:100%}
-.servicePrice{font-size:12px;font-weight:900;color:#fff;text-shadow:0 0 5px #00e5ff}
-.serviceBtn{width:100%;padding:4px 2px;background:var(--green);color:#000;border:0;border-radius:5px;font-weight:900;font-size:9px}
+.serviceName{font-size:8px;font-weight:900;color:var(--green);text-shadow:0 0 3px #39ff14;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;width:100%}
+.servicePrice{font-size:11px;font-weight:900;color:#fff;text-shadow:0 0 4px #00e5ff}
+.serviceBtn{width:100%;padding:3px;background:var(--green);color:#000;border:0;border-radius:4px;font-weight:900;font-size:8px}
 
 /* Panel Admin de Servicios */
 .adminBox{margin-top:15px;padding:12px;border:1px dashed var(--red);border-radius:12px;background:rgba(255,0,60,0.05)}
@@ -182,49 +184,50 @@ let services = JSON.parse(localStorage.getItem('marciano_services')) || [
   { name: 'APPLE TV', price: '$30' },
   { name: 'FOX ONE', price: '$20' },
   { name: 'SPOTIFY', price: '$35' },
-  { name: 'YOUTUBE PREMIUM', price: '$30' },
+  { name: 'YOUTUBE', price: '$30' },
   { name: 'APPLE MUSIC', price: '$30' },
   { name: 'PORNHUB', price: '$50' },
   { name: 'CANVA PRO', price: '$25' },
   { name: 'CAPCUT PRO', price: '$25' },
   { name: 'GEMINI PRO', price: '$40' },
-  { name: 'CHAT GPT PLUS', price: '$50' },
-  { name: 'ADOBE PREMIUM', price: '$80' },
+  { name: 'CHAT GPT', price: '$50' },
+  { name: 'ADOBE', price: '$80' },
   { name: 'FACEBOOK', price: '$10' },
   { name: 'INSTAGRAM', price: '$10' },
   { name: 'TIKTOK', price: '$15' },
-  { name: 'DIAMANTES FREE FIRE', price: '$60' },
-  { name: 'PASE FREE FIRE', price: '$90' },
-  { name: 'MONEDAS MINECRAFT', price: '$50' },
-  { name: 'ROBUX ROBLOX', price: '$80' },
-  { name: 'CODPOINTS CODM', price: '$70' },
+  { name: 'FREE FIRE', price: '$60' },
+  { name: 'MINECRAFT', price: '$50' },
+  { name: 'ROBLOX', price: '$80' },
+  { name: 'CODM', price: '$70' },
   { name: 'LIBROS', price: '$20' }
 ];
 
 function getServiceLogo(name){
   const n = name.toUpperCase();
-  if(n.includes('NETFLIX')) return 'https://upload.wikimedia.org/wikipedia/commons/0/08/Netflix_2015_logo.svg';
-  if(n.includes('DISNEY')) return 'https://upload.wikimedia.org/wikipedia/commons/3/3e/Disney%2B_logo.svg';
-  if(n.includes('MAX') || n.includes('HBO')) return 'https://upload.wikimedia.org/wikipedia/commons/c/ce/Max_logo.svg';
-  if(n.includes('PRIME')) return 'https://upload.wikimedia.org/wikipedia/commons/1/11/Amazon_Prime_Video_logo_%282024%29.svg';
-  if(n.includes('VIX')) return 'https://upload.wikimedia.org/wikipedia/commons/e/e0/ViX_logo_%282023%29.svg';
-  if(n.includes('PARAMOUNT')) return 'https://upload.wikimedia.org/wikipedia/commons/c/c2/Paramount_Pictures_Logo_%282022%29.svg';
-  if(n.includes('CRUNCHYROLL')) return 'https://upload.wikimedia.org/wikipedia/commons/0/08/Crunchyroll_Logo.png';
-  if(n.includes('UNIVERSAL')) return 'https://upload.wikimedia.org/wikipedia/commons/6/6f/Universal_Pictures_2012_logo.svg';
+  if(n.includes('NETFLIX')) return 'https://images.ctfassets.net/4cd45et68cgf/7LrExJ6PAj6MSIPkDyCO86/542b1dfabbf3959908f69136c1753f2b/Netflix-Brand-Logo.png';
+  if(n.includes('DISNEY')) return 'https://static.wikia.nocookie.net/logopedia/images/3/3a/Disney%2B_icon_%282019%29.svg';
+  if(n.includes('MAX') || n.includes('HBO')) return 'https://images.ctfassets.net/bs8ntwkklfhl/6D2g3w9X0yY6q6o0g000e4/8d154bc8d7b3528bfa17c5b3648a7b6b/max_app_icon.png';
+  if(n.includes('PRIME')) return 'https://images.justwatch.com/icon/52449861/s100/prime-video.webp';
+  if(n.includes('VIX')) return 'https://images.justwatch.com/icon/257321685/s100/vix.webp';
+  if(n.includes('PARAMOUNT')) return 'https://images.justwatch.com/icon/305513233/s100/paramount-plus.webp';
+  if(n.includes('CRUNCHYROLL')) return 'https://images.justwatch.com/icon/207297746/s100/crunchyroll.webp';
+  if(n.includes('UNIVERSAL')) return 'https://images.justwatch.com/icon/167733470/s100/universal-plus.webp';
   if(n.includes('APPLE')) return 'https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg';
-  if(n.includes('SPOTIFY')) return 'https://upload.wikimedia.org/wikipedia/commons/1/19/Spotify_logo_without_text.svg';
+  if(n.includes('SPOTIFY')) return 'https://storage.googleapis.com/pr-newsroom-wp/1/2023/05/Spotify_Primary_Logo_RGB_Green.png';
   if(n.includes('YOUTUBE')) return 'https://upload.wikimedia.org/wikipedia/commons/0/09/YouTube_full-color_icon_%282017%29.svg';
-  if(n.includes('PORNHUB')) return 'https://upload.wikimedia.org/wikipedia/commons/b/b8/Pornhub_logo.svg';
-  if(n.includes('CANVA')) return 'https://upload.wikimedia.org/wikipedia/commons/0/08/Canva_icon_2021.svg';
-  if(n.includes('CAPCUT')) return 'https://upload.wikimedia.org/wikipedia/commons/8/84/CapCut_logo.svg';
+  if(n.includes('PORNHUB')) return 'https://images.uncyc.org/commons/thumb/1/18/Pornhub_logo_old.png/120px-Pornhub_logo_old.png';
+  if(n.includes('CANVA')) return 'https://static.canva.com/static/images/canva_favicon_128.png';
+  if(n.includes('CAPCUT')) return 'https://lf16-web-use.capcut.com/obj/capcut-web-use-us/common/capcut_logo.png';
   if(n.includes('GEMINI')) return 'https://www.gstatic.com/lamda/images/gemini_sparkle_v002_d4735304ff6292a690345.svg';
-  if(n.includes('CHAT GPT') || n.includes('OPENAI')) return 'https://upload.wikimedia.org/wikipedia/commons/0/04/ChatGPT_logo.svg';
+  if(n.includes('CHAT GPT')) return 'https://upload.wikimedia.org/wikipedia/commons/0/04/ChatGPT_logo.svg';
   if(n.includes('ADOBE')) return 'https://upload.wikimedia.org/wikipedia/commons/7/7b/Adobe_Systems_logo_and_wordmark_%282020%29.svg';
   if(n.includes('FACEBOOK')) return 'https://upload.wikimedia.org/wikipedia/commons/b/b8/2021_Facebook_icon.svg';
   if(n.includes('INSTAGRAM')) return 'https://upload.wikimedia.org/wikipedia/commons/e/e7/Instagram_logo_2016.svg';
   if(n.includes('TIKTOK')) return 'https://upload.wikimedia.org/wikipedia/commons/3/34/Ionicons_logo-tiktok.svg';
-  if(n.includes('FREE FIRE') || n.includes('DIAMANTES') || n.includes('PASE')) return 'https://api.iconify.design/lucide:gamepad-2.svg?color=%2339ff14';
-  if(n.includes('MINECRAFT') || n.includes('ROBUX') || n.includes('ROBLOX') || n.includes('CODM')) return 'https://api.iconify.design/lucide:coins.svg?color=%2339ff14';
+  if(n.includes('FREE FIRE') || n.includes('DIAMANTES') || n.includes('PASE')) return 'https://yt3.googleusercontent.com/ytc/AIdro_k6-xYgL2QvX8sJ7h5X9s8vX2wQ5z8vX2wQ5z8=s900-c-k-c0x00ffffff-no-rj';
+  if(n.includes('MINECRAFT')) return 'https://www.minecraft.net/content/dam/games/minecraft/key-art/The-Wild-Update_Logo.png';
+  if(n.includes('ROBLOX') || n.includes('ROBUX')) return 'https://images.rbxcdn.com/13ee08f0a827553b97b0a316719b4e1d.png';
+  if(n.includes('CODM')) return 'https://images.justwatch.com/icon/250529681/s100/call-of-duty-mobile.webp';
   if(n.includes('LIBROS')) return 'https://api.iconify.design/lucide:book-open.svg?color=%2339ff14';
   return 'https://api.iconify.design/lucide:tv.svg?color=%2339ff14';
 }
