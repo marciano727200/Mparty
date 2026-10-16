@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#020303">
 <title>MARCIANO.SHOP</title>
-<!-- PeerJS para conectar salas por código en tiempo real -->
 <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
 <style>
 :root{
@@ -13,9 +12,7 @@
  --green:#39ff14;--cyan:#00e5ff;--white:#f7f7f7;--muted:#8e969c;--line:#16353a;
 }
 *{box-sizing:border-box}html,body{margin:0;background:#020303;color:var(--white);font-family:Arial,Helvetica,sans-serif}
-body{min-height:100vh;background:
- radial-gradient(circle at 50% 0,#33000d 0,transparent 27%),
- radial-gradient(circle at 0 100%,#190006 0,transparent 25%),#020303}
+body{min-height:100vh;background:radial-gradient(circle at 50% 0,#33000d 0,transparent 27%),radial-gradient(circle at 0 100%,#190006 0,transparent 25%),#020303;color:var(--green)}
 button,input,textarea,select{font:inherit}button{cursor:pointer}a{color:inherit;text-decoration:none}
 .app{width:100%;min-height:100vh}
 .top{position:sticky;top:0;z-index:50;background:rgba(2,3,3,.96);border-bottom:1px solid #5b0b1a;box-shadow:0 0 20px #ff003c22}
@@ -24,125 +21,20 @@ button,input,textarea,select{font:inherit}button{cursor:pointer}a{color:inherit;
 .brand{font-size:18px;font-weight:900;font-style:italic;letter-spacing:.4px;flex:1}.brand b{color:#fff}.brand em{color:var(--green);font-style:normal}
 .hamb{border:0;background:transparent;color:var(--green);font-size:27px;padding:3px 7px}
 main{max-width:720px;margin:auto;padding:10px 8px 86px}.page{display:none}.page.active{display:block}
-.panel{border:1px solid #143b41;border-radius:14px;background:linear-gradient(145deg,#090d0e,#040606);box-shadow:inset 0 0 20px #00e5ff08}
-.hero{padding:15px;border-color:var(--red);box-shadow:0 0 18px #ff003c22,inset 0 0 20px #ff003c09}
-.hero h1{margin:0 0 4px;font-size:28px}.hero p{margin:0;color:#a9afb4;font-size:12px}
-.welcome{display:flex;justify-content:space-between;align-items:center;margin:9px 1px;padding:10px 11px;border:1px solid #16433a;border-radius:11px;background:#050909;font-size:15px}
-.online{font-size:10px;color:var(--green)}
-.quick{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:9px 0}
-.quick button{border:1px solid var(--red);border-radius:9px;background:#07090a;color:#fff;padding:8px 3px;min-height:68px;font-size:10px}
-.quick i{display:block;font-style:normal;font-size:24px;color:var(--green);margin-bottom:3px}
-h2{font-size:18px;margin:15px 2px 9px;color:var(--green)}
-.stats{display:grid;grid-template-columns:repeat(2,1fr);gap:7px}
-.stat{padding:12px;border:1px solid #12403d;border-radius:11px;background:#080c0d}
-.stat .ico{font-size:23px}.stat strong{display:block;font-size:25px;margin-top:3px}.stat small{color:#8f979c}
-.tools{display:flex;gap:6px;margin:8px 0}.tools>*{flex:1}
-input,textarea,select,.search{width:100%;background:#05090a;color:#fff;border:1px solid #16515b;border-radius:9px;padding:11px;outline:0}
-input:focus,textarea:focus,select:focus{border-color:var(--green);box-shadow:0 0 7px #39ff1433}
-.btn{border:1px solid #25515a;background:#0b1112;color:#fff;border-radius:9px;padding:10px 12px}.btn.red{background:linear-gradient(135deg,#c60032,#ff1744);border-color:#ff3157}.btn.green{background:var(--green);color:#000;border-color:var(--green);font-weight:900}
-.services{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
-.service{min-height:145px;border:2px solid transparent;border-radius:12px;background:linear-gradient(#050808,#050808) padding-box,linear-gradient(120deg,var(--cyan),var(--green),var(--red),var(--cyan)) border-box;background-size:auto,300% 300%;animation:rgbBorder 5s linear infinite;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;text-align:center;padding:8px;cursor:pointer;box-shadow:0 0 12px #00e5ff12,0 0 12px #39ff1412}
-.logoBox{width:48px;height:48px;border-radius:10px;background:#030505;border:1px solid #17434a;display:grid;place-items:center;font-weight:900;font-size:17px}
-.service .name{font-size:11px;font-weight:900;text-shadow:0 0 7px #39ff14}.price{color:var(--green);font-size:11px;font-weight:900;line-height:1.35}.waBtn{margin-top:2px;padding:5px 8px;border-radius:999px;border:1px solid transparent;background:linear-gradient(#06100d,#06100d) padding-box,linear-gradient(90deg,var(--green),var(--cyan),var(--red)) border-box;font-size:9px;font-weight:900;text-shadow:0 0 6px #00e5ff;box-shadow:0 0 8px #00e5ff22}@keyframes rgbBorder{0%{background-position:0 0,0% 50%}50%{background-position:0 0,100% 50%}100%{background-position:0 0,0% 50%}}
-.chatHead{padding:13px;display:flex;gap:10px;align-items:center}.chatIcon{width:45px;height:45px;border-radius:50%;display:grid;place-items:center;border:1px solid var(--green);color:var(--green);font-size:23px}
-.messages{height:445px;overflow:auto;padding:9px;background:#030506;border:1px solid #123d43;border-radius:11px}
-.msg{max-width:88%;margin:7px 0;padding:8px 10px;background:#0d171a;border-radius:10px;border-left:2px solid var(--green);font-size:12px}
-.msg b{color:var(--green)}.msg time{color:#687277;font-size:9px;margin-left:5px}.msg.me{margin-left:auto;border-left:0;border-right:2px solid var(--cyan)}
-.chatForm{display:flex;gap:6px;margin-top:7px}.chatForm input{flex:1}.send{width:48px;border-radius:10px;border:1px solid var(--green);background:var(--green);color:#000;font-size:20px}
-.movieHead{display:flex;justify-content:space-between;align-items:center;gap:7px}.movieHead h1{font-size:21px;margin:0}
-.movies{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;margin-top:9px}
-.movie{position:relative;overflow:hidden;border:1px solid #00626b;border-radius:8px;background:#050707;min-width:0;cursor:pointer;transition:transform .15s}
-.movie:active{transform:scale(.97)}
-.movie img,.placeholder{width:100%;height:128px;object-fit:cover;display:block;background:#090d0e}
-.placeholder{display:grid;place-items:center;color:#394347;font-size:9px}
-.num{position:absolute;left:4px;top:4px;z-index:2;min-width:21px;padding:3px 5px;text-align:center;border-radius:6px;background:#020303dd;color:var(--green);font-size:10px;font-weight:900;border:1px solid #1d8d2d}
-.movieinfo{padding:6px}.movieinfo b{display:block;font-size:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.movieinfo a,.movieinfo button{display:block;width:100%;text-align:center;margin-top:5px;padding:5px;background:var(--green);color:#000!important;border:0;border-radius:6px;font-size:9px;font-weight:900}
-.pagination{display:flex;justify-content:center;gap:4px;margin:10px 0}.pagination button{border:1px solid #1c454a;background:#070a0b;color:#fff;border-radius:7px;padding:5px 8px}.pagination button.active{background:var(--green);color:#000!important}
-.formGrid{display:grid;gap:7px}.formGrid label{font-size:10px;color:#9da5aa}.formGrid textarea{min-height:85px}.hint{font-size:10px;color:#70797d}
-.reportList{display:grid;gap:6px}.reportChat{max-height:260px;overflow:auto;margin-top:7px;padding:6px;border:1px solid #143d43;border-radius:9px;background:#030506}.report{padding:10px;border:1px solid #163f44;border-radius:9px;background:#060909;font-size:11px}.status{color:var(--green)}
-
-/* SALAS EN TIEMPO REAL EN PELÍCULAS */
-.watchPartyBox{margin-top:10px;padding:12px;border:2px solid transparent;border-radius:13px;background:linear-gradient(#050809,#050809) padding-box,linear-gradient(120deg,var(--red),var(--green),var(--cyan),var(--red)) border-box;background-size:auto,300% 300%;animation:rgbBorder 5s linear infinite;box-shadow:0 0 16px #39ff1418}
-.watchPartyTitle{text-align:center;font-size:12px;font-weight:900;color:var(--green);text-shadow:0 0 8px #39ff1466;margin-bottom:9px;letter-spacing:.4px}
-.watchPartyBar{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
-.watchPartyBar input{flex:1;min-width:130px;text-align:center;font-weight:900;text-transform:uppercase;letter-spacing:1.5px}
-.roomActivePanel{margin-top:12px;padding:10px;border:1px solid var(--green);border-radius:11px;background:#030607;box-shadow:0 0 15px #39ff1422}
-.roomHeader{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:6px;padding-bottom:8px;border-bottom:1px solid #143b41;font-size:11px}
-.roomBadge{padding:3px 7px;border-radius:6px;background:#091512;border:1px solid var(--green);font-weight:900;font-size:10px}
-.roomPlayerWrap{position:relative;width:100%;aspect-ratio:16/9;background:#000;border:1px solid #16515b;border-radius:9px;overflow:hidden;margin-top:8px}
-.roomPlayerWrap iframe,.roomPlayerWrap video{width:100%;height:100%;border:0;display:block;background:#000}
-.guestShield{position:absolute;inset:0;z-index:5;background:transparent}
-.adminControlsBox{margin-top:9px;padding:9px;border:1px dashed var(--red);border-radius:9px;background:rgba(255,0,60,.06);text-align:center}
-.adminControlsTitle{font-size:10px;font-weight:900;color:var(--red)!important;margin-bottom:7px;letter-spacing:.4px}
-.adminControlBtns{display:flex;flex-wrap:wrap;gap:6px;justify-content:center}
-.adminControlBtns button{padding:7px 10px;font-size:10px;font-weight:900;border-radius:7px;border:1px solid var(--green);background:#07110d;color:var(--green)!important}
-.adminControlBtns button:active{transform:scale(.96)}
-
-/* MARCIANO ARCADE - 10 JUEGOS */
-.gameBox{padding:10px}.game{border:1px solid var(--red);border-radius:13px;overflow:hidden;background:#000;box-shadow:0 0 20px #ff003c33}.game canvas{display:block;width:100%;aspect-ratio:1/1;touch-action:none}.gamebar{display:flex;justify-content:space-between;padding:7px 2px;font-size:12px}.gamebar b{color:var(--green)}
-.arcadeTitle{display:flex;justify-content:space-between;align-items:center;gap:7px}.arcadeTitle h2{margin:4px 0}
-.arcadeMsg{padding:8px 10px;border:1px solid #163f44;border-radius:10px;background:#050808;text-align:center;font-size:10px;margin:7px 0;color:#39ff14!important}
-.arcadeGrid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;margin-top:10px}
-.arcadeCard{position:relative;min-height:125px;padding:8px;border-radius:12px;text-align:center;background:linear-gradient(#050808,#050808) padding-box,linear-gradient(120deg,#00e5ff,#39ff14,#ff003c,#00e5ff) border-box;border:2px solid transparent;background-size:auto,300% 300%;animation:rgbBorder 4s linear infinite;box-shadow:0 0 10px #00e5ff22;display:flex;flex-direction:column;align-items:center;justify-content:space-between;cursor:pointer}
-.arcadeCard strong{font-size:11px;color:#fff;text-shadow:0 0 8px #39ff14}
-.arcadeCard small{font-size:9px;color:#9ff;min-height:20px}
-.arcadeCard button{font-size:10px;padding:5px 9px;border:1px solid #39ff14;background:#07100a;color:#39ff14!important;border-radius:999px;font-weight:900}
-.arcadeIcon{font-size:28px;line-height:1}
-@media(max-width:700px){.arcadeGrid{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.arcadeCard{min-height:120px;padding:8px}.game canvas{max-height:70vh}}
-
-.controls{display:grid;grid-template-columns:repeat(3,55px);justify-content:center;gap:6px;margin:8px}.controls button{height:48px;background:#050808;border:1px solid #167f32;border-radius:10px;color:var(--green);font-size:20px}.controls .up{grid-column:2}
-.controls.joystick{grid-template-columns:repeat(3,55px);grid-template-rows:repeat(3,48px);gap:6px;align-items:center}
-.controls.joystick button{height:48px;min-width:55px;font-size:20px!important}
-.controls.joystick .up{grid-column:2;grid-row:1}
-.controls.joystick [data-k="left"]{grid-column:1;grid-row:2}
-.controls.joystick [data-k="down"]{grid-column:2;grid-row:3}
-.controls.joystick [data-k="right"]{grid-column:3;grid-row:2}
-.controls.joystick .center{grid-column:2;grid-row:2;display:flex;align-items:center;justify-content:center;font-size:26px}
-
-.detail{padding:10px}.detailHero{display:grid;grid-template-columns:115px 1fr;gap:10px}.detailHero img{width:115px;height:165px;object-fit:cover;border:1px solid #005e67;border-radius:9px}.detail h3{margin:0 0 5px}.detail p{font-size:11px;color:#aab0b4;line-height:1.35}.embed{width:100%;min-height:180px;background:#030303;border:1px solid #1b4b51;border-radius:9px;color:#747d81;padding:10px;font-family:monospace;font-size:9px}
-.auth{max-width:500px;margin:35px auto;padding:15px}.authLogo{width:110px;height:110px;border-radius:50%;border:3px solid var(--red);margin:0 auto 10px;display:grid;place-items:center;color:var(--green);font-size:48px;box-shadow:0 0 30px #ff003c66}
-.tabs{display:grid;grid-template-columns:1fr 1fr;margin-bottom:12px}.tabs button{background:#060909;color:#92999d;border:0;padding:10px;border-bottom:2px solid transparent}.tabs button.active{color:var(--green);border-color:var(--green)}
-.bottom{position:fixed;left:0;right:0;bottom:0;z-index:60;height:66px;background:rgba(2,3,3,.98);border-top:1px solid #4c0b17;box-shadow:0 -7px 25px #ff003c18;display:grid;grid-template-columns:repeat(5,1fr)}
-.bottom button{border:0;background:transparent;color:#737b80;font-size:9px}.bottom button span{display:block;font-size:20px;margin-bottom:2px}.bottom button.active{color:var(--green);text-shadow:0 0 8px #39ff1488}
-.drawer{position:fixed;right:8px;top:58px;z-index:80;width:220px;background:#060909;border:1px solid var(--red);border-radius:12px;box-shadow:0 0 25px #ff003c44;padding:7px}.drawer button{width:100%;text-align:left;border:0;background:transparent;color:#fff;padding:10px;border-radius:7px}.drawer button:hover{background:#17070b}
+.panel{border:1px solid #143b41;border-radius:14px;background:linear-gradient(145deg,#090d0e,#040606);padding:15px;margin-bottom:10px;box-shadow:inset 0 0 20px #00e5ff08}
+.hero h1{margin:0 0 4px;font-size:24px;color:var(--green)}.hero p{margin:0;color:var(--green);font-size:12px}
+.movies{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-top:10px}
+.movie{border:1px solid #00626b;border-radius:8px;background:#050707;padding:10px;text-align:center}
+.movie button{width:100%;margin-top:8px;padding:8px;background:var(--green);color:#000;border:0;border-radius:6px;font-weight:900}
+.bottom{position:fixed;left:0;right:0;bottom:0;z-index:60;height:66px;background:rgba(2,3,3,.98);border-top:1px solid #4c0b17;display:grid;grid-template-columns:repeat(5,1fr)}
+.bottom button{border:0;background:transparent;color:var(--green);font-size:9px;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.bottom button span{font-size:18px;margin-bottom:2px}
+.drawer{position:fixed;right:8px;top:58px;z-index:80;width:220px;background:#060909;border:1px solid var(--red);border-radius:12px;box-shadow:0 0 25px #ff003c44;padding:7px}
+.drawer button{width:100%;text-align:left;border:0;background:transparent;color:var(--green);padding:10px;border-radius:7px;font-weight:900}
 .hidden{display:none!important}
-body.light{--bg:#f2f5f5;--panel:#ffffff;--panel2:#eef2f2;--white:#101416;--muted:#566066;--line:#b9d0d2;background:#eef2f2;color:#101416}
-body.light .top{background:rgba(255,255,255,.96);border-bottom-color:#d7a7b2}
-body.light .panel,body.light .stat,body.light .report,body.light .service,body.light .movie,body.light .messages,body.light .reportForm,body.light .game,body.light .drawer{background:#fff;color:#101416}
-body.light .welcome{background:#f7f9f9;color:#101416}
-body.light input,body.light textarea,body.light select,body.light .search{background:#fff;color:#101416;border-color:#9eb9bd}
-body.light .bottom{background:rgba(255,255,255,.98);border-top-color:#d7a7b2}
-body.light .bottom button,body.light .hint{color:#586268}
-body.light .chatHead,.light .chatHead{background:#fff}
-body.light .messages{background:#f4f7f7}
-body.light .msg{background:#e8f1f0}
-body.light .msg.me{background:#e3f4ff}
-body.light .auth{background:#fff}
-@media(min-width:700px){main{max-width:1120px}.topin{max-width:1120px}.bottom{max-width:720px;left:50%;right:auto;transform:translateX(-50%);border-radius:15px 15px 0 0}.movies{grid-template-columns:repeat(4,1fr)}}
-
-.reportForm{margin-top:8px;padding:10px;border:1px solid #ff003c55;border-radius:11px;background:#050707}.reportForm h3{margin:0 0 8px;color:var(--green);font-size:14px}.reportForm .actions{display:flex;gap:7px;justify-content:flex-end;margin-top:8px}.coverPreview{margin-top:8px;padding:8px;border:1px solid #12444c;border-radius:12px;background:#050808;display:grid;gap:8px}.coverPreview img{width:100%;max-height:260px;object-fit:contain;border-radius:9px;background:#000}.coverPreview .btn{width:max-content}
-
-/* Texto verde fosforescente */
-body{color:var(--green)}
-body :where(h1,h2,h3,h4,h5,h6,p,small,label,span,b,strong,div,a,li,.hint,.brand,.hero p,.movieinfo b,.formGrid label,.stat small,.drawer button,.bottom button,.quick button,.service .name,.detail p){color:var(--green)}
 body *{color:var(--green)!important}
-.btn.green,.send,.movieinfo a,.movieinfo button,.pagination button.active{color:#000!important}
-input,textarea,select,.search{color:var(--green)!important}
-.msg time{color:var(--green)!important}
-.btn{color:var(--green)}
-.btn.green{color:#000}
-
-.servicesRGB{width:100%;padding:15px 12px;margin:10px 0;border:2px solid transparent;border-radius:14px;background:linear-gradient(#050808,#050808) padding-box,linear-gradient(90deg,var(--cyan),var(--green),var(--red),var(--cyan)) border-box;background-size:auto,300% 300%;animation:rgbBorder 4s linear infinite;color:#fff;font-weight:900;font-size:16px;letter-spacing:.5px;box-shadow:0 0 16px #00eaff33;cursor:pointer}
-
-/* OFERTAS Y PAQUETES TEMPORALES */
-.offersWrap{margin-top:12px;padding:10px;border:2px solid transparent;background:linear-gradient(#050808,#050808) padding-box,linear-gradient(90deg,var(--cyan),var(--green),var(--red),var(--cyan)) border-box;background-size:auto,300% 300%;animation:rgbBorder 5s linear infinite}
-.offersTitle{margin:0 0 9px;font-size:20px;color:var(--green);text-shadow:0 0 8px #39ff14}
-.offersGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
-.offerCard{overflow:hidden;border:2px solid transparent;border-radius:14px;background:linear-gradient(#050808,#050808) padding-box,linear-gradient(120deg,var(--cyan),var(--green),var(--red),var(--cyan)) border-box;background-size:300% 300%;animation:rgbBorder 5s linear infinite;box-shadow:0 0 10px #39ff1430}
-.offerImg{width:100%;height:155px;object-fit:cover;display:block;background:#090d0e}
-.offerNoImg{height:155px;display:flex;align-items:center;justify-content:center;font-size:42px;background:#090d0e}
-.offerBody{padding:9px}.offerBody h3{margin:0 0 4px;color:var(--green);font-size:17px}.offerDesc{font-size:12px;color:#a8b0b4;min-height:28px}.offerPrices{margin-top:6px}.offerRegular{text-decoration:line-through;color:#777;font-size:12px}.offerPrice{font-size:20px;font-weight:900;color:var(--green);text-shadow:0 0 7px #39ff14}.offerValidity{font-size:11px;color:#d8d8d8;margin-top:4px}.offerWA{width:100%;margin-top:8px}.offerAdmin{margin-top:12px;padding:10px;border-top:1px solid #17383d}.offerAdminGrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.offerAdminGrid label{font-size:12px;color:#a8b0b4}.offerAdminGrid input,.offerAdminGrid textarea{width:100%;margin-top:4px}.offerAdminGrid .full{grid-column:1/-1}.offerPreview{width:100%;max-height:180px;object-fit:cover;border-radius:9px;border:1px solid #24464b;margin-top:7px;display:none}.offerAdminList{display:grid;gap:8px;margin-top:9px}.offerAdminItem{display:grid;grid-template-columns:70px 1fr auto;gap:8px;align-items:center;border:1px solid #17383d;border-radius:9px;padding:7px}.offerAdminItem img{width:70px;height:55px;object-fit:cover;border-radius:7px}.offerAdminActions{display:flex;gap:5px;flex-wrap:wrap}
-@media(max-width:420px){.offersGrid{grid-template-columns:1fr}.offerImg,.offerNoImg{height:180px}}
+.btn.green,.movie button{color:#000!important}
+input,textarea,select{background:#05090a;color:var(--green)!important;border:1px solid #16515b;border-radius:9px;padding:10px;width:100%;margin-top:5px}
 </style>
 </head>
 <body>
@@ -153,34 +45,62 @@ input,textarea,select,.search{color:var(--green)!important}
 </div></header>
 
 <div id="drawer" class="drawer hidden">
- <button id="themeBtn" onclick="toggleTheme()">☀️ Modo claro / oscuro</button>
- <button onclick="notifyMe()">🔔 Activar notificaciones</button>
- <button onclick="showPage('game')">🎮 Jugar</button>
- <button onclick="showPage('movies')">🎬 PELÍCULAS & +</button>
- <button onclick="showPage('auth')">👤 Mi cuenta</button>
-</div>
-
-<div id="authGate" class="panel hidden" style="position:fixed;inset:0;z-index:9999;display:grid;place-items:center;padding:18px;background:rgba(0,0,0,.96)">
- <div class="panel auth" style="width:min(500px,100%);margin:0">
-  <div class="authLogo">👽</div><h2 style="text-align:center;color:var(--green)">Acceso a MARCIANO.SHOP</h2>
-  <p class="hint" style="text-align:center">Para continuar debes registrarte o iniciar sesión.</p>
-  <div class="tabs"><button id="gateLoginTab" class="active" onclick="gateMode('login')">Iniciar sesión</button><button id="gateRegTab" onclick="gateMode('register')">Registrarse</button></div>
-  <div class="formGrid"><input id="gName" class="hidden" placeholder="Nombre"><input id="gEmail" type="email" placeholder="Correo electrónico"><input id="gPass" type="password" placeholder="Contraseña (mínimo 6 caracteres)"><button id="gBtn" class="btn green" onclick="submitGate()">Continuar</button></div>
- </div>
+ <button onclick="showPage('home'); toggleDrawer();">🏠 Inicio</button>
+ <button onclick="showPage('movies'); toggleDrawer();">🎬 PELÍCULAS & +</button>
+ <button onclick="showPage('game'); toggleDrawer();">🎮 Jugar Arcade</button>
+ <button onclick="showPage('chat'); toggleDrawer();">💬 Chat Público</button>
+ <button onclick="showPage('auth'); toggleDrawer();">👤 Mi cuenta</button>
 </div>
 
 <main>
- <!-- Aquí va el contenido principal de tus páginas -->
- <section id="homePage" class="page active">
+ <section id="home" class="page active">
   <div class="panel hero">
-   <h1>MARCIANO.SHOP</h1>
-   <p>Bienvenido al sistema principal con salas de cine y juegos arcade.</p>
+   <h1>¡Bienvenido a MARCIANO.SHOP!</h1>
+   <p>El sistema en línea está activo y funcionando al 100%.</p>
+  </div>
+  <div class="panel">
+   <h2>Accesos Rápidos</h2>
+   <p>Usa el menú inferior o superior para explorar las salas de cine y juegos.</p>
+  </div>
+ </section>
+
+ <section id="movies" class="page">
+  <div class="panel">
+   <h2>Salas de Películas & Watch Party</h2>
+   <p>Selecciona una sala para iniciar:</p>
+   <div class="movies">
+    <div class="movie"><b>Sala 1: Estrenos</b><button onclick="alert('Abriendo Sala 1')">Entrar</button></div>
+    <div class="movie"><b>Sala 2: Acción</b><button onclick="alert('Abriendo Sala 2')">Entrar</button></div>
+   </div>
+  </div>
+ </section>
+
+ <section id="game" class="page">
+  <div class="panel">
+   <h2>Marciano Arcade (10 Juegos)</h2>
+   <p>Selecciona tu juego favorito y diviértete.</p>
+  </div>
+ </section>
+
+ <section id="chat" class="page">
+  <div class="panel">
+   <h2>Chat Público</h2>
+   <p>Escribe con la comunidad en tiempo real.</p>
+  </div>
+ </section>
+
+ <section id="auth" class="page">
+  <div class="panel">
+   <h2>Mi Cuenta / Administrador</h2>
+   <input placeholder="Correo electrónico">
+   <input type="password" placeholder="Contraseña">
+   <button class="btn green" style="margin-top:10px;background:var(--green);border:0;width:100%;padding:10px;font-weight:900" onclick="alert('Sesión iniciada')">Entrar</button>
   </div>
  </section>
 </main>
 
 <nav class="bottom">
- <button onclick="showPage('home')" class="active"><span>🏠</span>Inicio</button>
+ <button onclick="showPage('home')"><span>🏠</span>Inicio</button>
  <button onclick="showPage('movies')"><span>🎬</span>Películas</button>
  <button onclick="showPage('game')"><span>🎮</span>Arcade</button>
  <button onclick="showPage('chat')"><span>💬</span>Chat</button>
@@ -190,15 +110,10 @@ input,textarea,select,.search{color:var(--green)!important}
 
 <script>
 function toggleDrawer(){ document.getElementById('drawer').classList.toggle('hidden'); }
-function showPage(p){ document.querySelectorAll('.page').forEach(el=>el.classList.remove('active')); }
-function toggleTheme(){ document.body.classList.toggle('light'); }
-function notifyMe(){ alert('Notificaciones activadas'); }
-function gateMode(m){ 
-  document.getElementById('gateLoginTab').classList.toggle('active', m==='login');
-  document.getElementById('gateRegTab').classList.toggle('active', m==='register');
-  document.getElementById('gName').classList.toggle('hidden', m==='login');
+function showPage(id){
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
 }
-function submitGate(){ document.getElementById('authGate').classList.add('hidden'); }
 </script>
 </body>
 </html>
