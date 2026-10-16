@@ -24,7 +24,6 @@ main{max-width:1200px;margin:auto;padding:10px 4px 86px}.page{display:none}.page
 .panel{border:1px solid #143b41;border-radius:14px;background:linear-gradient(145deg,#090d0e,#040606);padding:10px;margin-bottom:10px;box-shadow:inset 0 0 20px #00e5ff08}
 .hero h1{margin:0 0 4px;font-size:22px;color:var(--green)}.hero p{margin:0;color:var(--green);font-size:11px}
 
-/* EFECTO BORDER RGB MULTICOLOR */
 @keyframes rgbBorder{
  0%{background-position:0 0,0% 50%}
  50%{background-position:0 0,100% 50%}
@@ -33,7 +32,6 @@ main{max-width:1200px;margin:auto;padding:10px 4px 86px}.page{display:none}.page
 
 .servicesTitle{font-size:16px;font-weight:900;margin:12px 0 8px;color:var(--green);text-shadow:0 0 8px #39ff14}
 
-/* 4 COLUMNAS CON TARJETAS CUADRADAS PERFECTAS */
 .servicesGrid{display:grid !important;grid-template-columns: repeat(4, 1fr) !important;gap:6px !important;margin-top:8px}
 @media(max-width:600px){.servicesGrid{grid-template-columns: repeat(3, 1fr) !important;}}
 
@@ -45,7 +43,6 @@ main{max-width:1200px;margin:auto;padding:10px 4px 86px}.page{display:none}.page
  box-shadow:0 0 8px rgba(57,255,20,0.15);cursor:pointer;
 }
 
-/* LOGO CUADRADO */
 .serviceLogoBox{width:36px;height:36px;border-radius:6px;background:#020303;border:1px solid var(--green);display:grid;place-items:center;overflow:hidden;box-shadow:0 0 5px #39ff1444}
 .serviceLogoBox img{width:100%;height:100%;object-fit:cover;background:#000}
 
@@ -53,7 +50,6 @@ main{max-width:1200px;margin:auto;padding:10px 4px 86px}.page{display:none}.page
 .servicePrice{font-size:9.5px;font-weight:900;color:#fff;text-shadow:0 0 4px #00e5ff;white-space:pre-line;line-height:1.15;max-height:26px;overflow:hidden}
 .serviceBtn{width:100%;padding:3px;background:var(--green);color:#000;border:0;border-radius:4px;font-weight:900;font-size:8px;text-align:center;display:block}
 
-/* Panel Admin de Servicios */
 .adminBox{margin-top:15px;padding:12px;border:1px dashed var(--red);border-radius:12px;background:rgba(255,0,60,0.05)}
 .adminBox h3{margin:0 0 8px;color:var(--red);font-size:14px}
 .adminListRow{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid #16353a;font-size:12px}
@@ -68,7 +64,6 @@ body *{color:var(--green)!important}
 .serviceBtn{color:#000!important}
 input,textarea,select{background:#05090a;color:var(--green)!important;border:1px solid #16515b;border-radius:9px;padding:10px;width:100%;margin-top:5px}
 
-/* Estilos Mparty para Películas */
 .mpartyBox{margin-top:10px;padding:12px;border:2px solid transparent;border-radius:13px;background:linear-gradient(#050809,#050809) padding-box,linear-gradient(120deg,var(--red),var(--green),var(--cyan),var(--red)) border-box;background-size:auto,300% 300%;box-shadow:0 0 16px #39ff1418}
 .roomPlayerWrap{position:relative;width:100%;aspect-ratio:16/9;background:#000;border:1px solid #16515b;border-radius:9px;overflow:hidden;margin-top:8px}
 .roomPlayerWrap iframe,.roomPlayerWrap video{width:100%;height:100%;border:0;display:block;background:#000}
@@ -98,11 +93,8 @@ input,textarea,select{background:#05090a;color:var(--green)!important;border:1px
 
   <div class="panel">
    <div class="servicesTitle">CATÁLOGO DE SERVICIOS Y RECURSOS</div>
-   <div id="servicesContainer" class="servicesGrid">
-    <!-- Generado dinámicamente -->
-   </div>
+   <div id="servicesContainer" class="servicesGrid"></div>
 
-   <!-- Panel exclusivo del Administrador -->
    <div id="adminPanel" class="adminBox hidden">
     <h3>⚙️ Panel de Administración (Gestión de Servicios)</h3>
     <p style="font-size:11px;color:#a9afb4;margin-bottom:8px">Agrega productos, precios con salto de línea (Enter) y enlace de compra:</p>
@@ -204,29 +196,29 @@ let services = JSON.parse(localStorage.getItem('marciano_services')) || [
 
 function getServiceLogo(name){
   const n = name.toUpperCase();
-  if(n.includes('NETFLIX')) return 'https://assets.nflxext.com/ffe/siteui/common/icons/nficon2023.ico';
-  if(n.includes('DISNEY')) return 'https://static-assets.bamgrid.com/product/disneyplus/images/favicon.1f6c773a80696a40510619213824b2b9.ico';
-  if(n.includes('MAX') || n.includes('HBO')) return 'https://www.max.com/favicon.ico';
-  if(n.includes('PRIME')) return 'https://m.media-amazon.com/images/G/01/digital/video/merch/2016/Other/BRND/BRND_MTH_Logo_120x120._CB523451558_.png';
-  if(n.includes('VIX')) return 'https://st.vixnd.com/core/vix/img/favicon.ico';
-  if(n.includes('PARAMOUNT')) return 'https://www.paramountplus.com/favicon.ico';
-  if(n.includes('CRUNCHYROLL')) return 'https://www.crunchyroll.com/i/favicon/favicon-32x32.png';
-  if(n.includes('UNIVERSAL')) return 'https://www.universalplus.com/favicon.ico';
-  if(n.includes('APPLE')) return 'https://www.apple.com/favicon.ico';
-  if(n.includes('SPOTIFY')) return 'https://open.spotifycdn.com/cdn/images/favicon.0f31d2ea.ico';
-  if(n.includes('YOUTUBE')) return 'https://www.youtube.com/s/desktop/2f1725ce/img/favicon.ico';
-  if(n.includes('PORN')) return 'https://www.pornhub.com/favicon.ico';
+  if(n.includes('NETFLIX')) return 'https://images.ctfassets.net/4cd45et68cgf/7LrExJ6PAj6MSIPkDyCO86/542b1dfabbf3959908f69136c1753f2b/Netflix-Brand-Logo.png';
+  if(n.includes('DISNEY')) return 'https://static.wikia.nocookie.net/logopedia/images/3/3a/Disney%2B_icon_%282019%29.svg';
+  if(n.includes('MAX') || n.includes('HBO')) return 'https://images.ctfassets.net/bs8ntwkklfhl/6D2g3w9X0yY6q6o0g000e4/8d154bc8d7b3528bfa17c5b3648a7b6b/max_app_icon.png';
+  if(n.includes('PRIME')) return 'https://images.justwatch.com/icon/52449861/s100/prime-video.webp';
+  if(n.includes('VIX')) return 'https://images.justwatch.com/icon/257321685/s100/vix.webp';
+  if(n.includes('PARAMOUNT')) return 'https://images.justwatch.com/icon/305513233/s100/paramount-plus.webp';
+  if(n.includes('CRUNCHYROLL')) return 'https://images.justwatch.com/icon/207297746/s100/crunchyroll.webp';
+  if(n.includes('UNIVERSAL')) return 'https://images.justwatch.com/icon/167733470/s100/universal-plus.webp';
+  if(n.includes('APPLE TV') || n.includes('APPLE MUSIC') || n.includes('APPLE')) return 'https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg';
+  if(n.includes('SPOTIFY')) return 'https://storage.googleapis.com/pr-newsroom-wp/1/2023/05/Spotify_Primary_Logo_RGB_Green.png';
+  if(n.includes('YOUTUBE')) return 'https://upload.wikimedia.org/wikipedia/commons/0/09/YouTube_full-color_icon_%282017%29.svg';
+  if(n.includes('PORN')) return 'https://images.uncyc.org/commons/thumb/1/18/Pornhub_logo_old.png/120px-Pornhub_logo_old.png';
   if(n.includes('CANVA')) return 'https://static.canva.com/static/images/canva_favicon_128.png';
   if(n.includes('CAPCUT')) return 'https://lf16-web-use.capcut.com/obj/capcut-web-use-us/common/capcut_logo.png';
   if(n.includes('GEMINI')) return 'https://www.gstatic.com/lamda/images/gemini_sparkle_v002_d4735304ff6292a690345.svg';
-  if(n.includes('CHAT GPT')) return 'https://openai.com/favicon.ico';
-  if(n.includes('ADOBE')) return 'https://www.adobe.com/favicon.ico';
-  if(n.includes('FACEBOOK')) return 'https://static.xx.fbcdn.net/rsrc.php/yT/r/aGT3BVKg_SQ.ico';
-  if(n.includes('INSTAGRAM')) return 'https://static.cdninstagram.com/rsrc.php/v3/yI/r/VsNE-OHk_8a.png';
-  if(n.includes('TIKTOK')) return 'https://sf16-website-login.neutral.ttwstatic.com/obj/tiktok_web_login_static/tiktok/webapp/main/favicon.ico';
-  if(n.includes('FREE FIRE')) return 'https://ff.garena.com/images/favicon.ico';
-  if(n.includes('MINECRAFT')) return 'https://www.minecraft.net/content/dam/games/minecraft/key-art/favicon.ico';
-  if(n.includes('ROBLOX')) return 'https://images.rbxcdn.com/b343c5b8b996b7da9d8c97afc1f308d9.ico';
+  if(n.includes('CHAT GPT')) return 'https://upload.wikimedia.org/wikipedia/commons/0/04/ChatGPT_logo.svg';
+  if(n.includes('ADOBE')) return 'https://upload.wikimedia.org/wikipedia/commons/7/7b/Adobe_Systems_logo_and_wordmark_%282020%29.svg';
+  if(n.includes('FACEBOOK')) return 'https://upload.wikimedia.org/wikipedia/commons/b/b8/2021_Facebook_icon.svg';
+  if(n.includes('INSTAGRAM')) return 'https://upload.wikimedia.org/wikipedia/commons/e/e7/Instagram_logo_2016.svg';
+  if(n.includes('TIKTOK')) return 'https://upload.wikimedia.org/wikipedia/commons/3/34/Ionicons_logo-tiktok.svg';
+  if(n.includes('FREE FIRE')) return 'https://yt3.googleusercontent.com/ytc/AIdro_k6-xYgL2QvX8sJ7h5X9s8vX2wQ5z8vX2wQ5z8=s900-c-k-c0x00ffffff-no-rj';
+  if(n.includes('MINECRAFT')) return 'https://www.minecraft.net/content/dam/games/minecraft/key-art/The-Wild-Update_Logo.png';
+  if(n.includes('ROBLOX')) return 'https://images.rbxcdn.com/13ee08f0a827553b97b0a316719b4e1d.png';
   return 'https://api.iconify.design/lucide:tv.svg?color=%2339ff14';
 }
 
