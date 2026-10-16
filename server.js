@@ -363,4 +363,40 @@ const server=http.createServer(async(req,res)=>{
       saveReports(next); return json(res,200,{ok:true});
     }
     if(req.method==="GET"){
-      const cleanUrl = req.url.split("?
+            const filePath = cleanUrl === "/" 
+        ? path.join(__dirname, "public", "index.html") 
+        : path.join(__dirname, "public", decodeURIComponent(cleanUrl));
+      
+      if (!filePath.startsWith(path.join(__dirname, "public"))) {
+        res.writeHead(403); return res.end("Forbidden");
+      }
+      if (fs.existsSync(filePath) && fs.statSync(filePath).isFile()) {
+        const ext = path.extname(filePath).toLowerCase();
+        const types = {
+          ".html": "text/html; charset=utf-8",
+          ".css": "text/css; charset=utf-8",
+          ".js": "application/javascript; charset=utf-8",
+          ".json": "application/json; charset=utf-8",
+          ".png": "image/png",
+          ".jpg": "image/jpeg",
+          ".jpeg": "image/jpeg",
+          ".svg": "image/svg+xml",
+          ".ico": "image/x-icon"
+        };
+        res.writeHead(200, { "Content-Type": types[ext] || "application/octet-stream", "Cache-Control": "no-store" });
+        return res.end(fs.readFileSync(filePath));
+      }
+    }
+    res.writeHead(404, { "Content-Type": "text/plain; charset=utf-8" });
+    res.end("No encontrado");
+  }catch(e){
+    console.error(e);
+    res.writeHead(500, { "Content-Type": "application/json; charset=utf-8" });
+    res.end(JSON.stringify({ error: "Error interno del servidor" }));
+  }
+});
+
+server.listen(PORT, () => {
+  console.log(`Servidor de MARCIANO.SHOP corriendo en puerto ${PORT}`);
+});
+
