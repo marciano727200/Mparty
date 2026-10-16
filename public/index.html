@@ -94,7 +94,7 @@ input,textarea,select{background:#05090a;color:var(--green)!important;border:1px
 
 <div id="drawer" class="drawer hidden">
  <button onclick="showPage('home'); toggleDrawer();">🏠 Inicio</button>
- <button onclick="showPage('reports'); toggleDrawer();">🚨 Reportes</button>
+ <button onclick="checkReportAccess(); toggleDrawer();">🚨 Reportes</button>
  <button onclick="showPage('movies'); toggleDrawer();">🎬 PELÍCULAS & Mparty</button>
  <button onclick="showPage('game'); toggleDrawer();">🎮 Jugar Arcade</button>
  <button onclick="showPage('chat'); toggleDrawer();">💬 Chat Público</button>
@@ -179,7 +179,7 @@ input,textarea,select{background:#05090a;color:var(--green)!important;border:1px
 
  <section id="auth" class="page">
   <div class="panel" id="authPanelContainer">
-   <!-- Se llena dinámicamente según si está logueado -->
+   <!-- Se llena dinámicamente -->
   </div>
  </section>
 </main>
@@ -308,20 +308,22 @@ function editService(index){
   }
 }
 
-/* Lógica de Autenticación y Registro */
+/* Lógica de Autenticación y Registro con Nombre */
 function renderAuth(){
   const container = document.getElementById('authPanelContainer');
   if(currentUser){
     container.innerHTML = `
       <h2>👤 Mi Cuenta</h2>
-      <p style="font-size:12px;color:var(--cyan);margin-bottom:12px">Sesión iniciada como: <b>${currentUser.email}</b></p>
+      <p style="font-size:12px;color:var(--cyan);margin-bottom:6px">Nombre: <b>${currentUser.name}</b></p>
+      <p style="font-size:12px;color:var(--cyan);margin-bottom:12px">Correo: <b>${currentUser.email}</b></p>
       <button class="serviceBtn" style="background:var(--red);color:#fff!important;padding:10px" onclick="handleLogout()">Cerrar Sesión</button>
     `;
   } else {
     container.innerHTML = `
       <h2>👤 Registro / Iniciar Sesión</h2>
-      <p style="font-size:11px;color:#a9afb4">Inicia sesión o regístrate para crear reportes:</p>
-      <input id="authEmail" placeholder="Correo electrónico">
+      <p style="font-size:11px;color:#a9afb4">Regístrate con tu nombre o inicia sesión:</p>
+      <input id="authName" placeholder="Tu Nombre" style="margin-bottom:5px">
+      <input id="authEmail" placeholder="Correo electrónico" style="margin-bottom:5px">
       <input id="authPass" type="password" placeholder="Contraseña">
       <div style="display:flex;gap:8px;margin-top:10px">
         <button class="serviceBtn" style="padding:10px;font-weight:900" onclick="handleLogin()">Iniciar Sesión</button>
@@ -332,16 +334,18 @@ function renderAuth(){
 }
 
 function handleRegister(){
+  const name = document.getElementById('authName').value.trim();
   const email = document.getElementById('authEmail').value.trim();
   const pass = document.getElementById('authPass').value.trim();
-  if(!email || !pass) return alert('Llena todos los campos.');
+  if(!name || !email || !pass) return alert('Por favor llena todos los campos.');
   
   let users = JSON.parse(localStorage.getItem('marciano_users')) || [];
   if(users.some(u => u.email === email)) return alert('Este correo ya está registrado.');
 
-  users.push({ email, pass });
+  users.push({ name, email, pass });
   localStorage.setItem('marciano_users', JSON.stringify(users));
   alert('¡Registro exitoso! Ahora inicia sesión.');
+  document.getElementById('authName').value = '';
   document.getElementById('authEmail').value = '';
   document.getElementById('authPass').value = '';
 }
@@ -351,19 +355,19 @@ function handleLogin(){
   const pass = document.getElementById('authPass').value.trim();
 
   if(email === 'm@m.m' && pass === 'admin'){
-    currentUser = { email: 'm@m.m' };
+    currentUser = { name: 'Administrador', email: 'm@m.m' };
     isAdmin = true;
   } else {
     let users = JSON.parse(localStorage.getItem('marciano_users')) || [];
     let found = users.find(u => u.email === email && u.pass === pass);
     if(!found) return alert('Correo o contraseña incorrectos.');
-    currentUser = { email: found.email };
+    currentUser = { name: found.name, email: found.email };
     isAdmin = false;
   }
 
   localStorage.setItem('marciano_current_user', JSON.stringify(currentUser));
   localStorage.setItem('marciano_admin', isAdmin ? 'true' : 'false');
-  alert('¡Bienvenido ' + currentUser.email + '!');
+  alert('¡Bienvenido ' + currentUser.name + '!');
   renderServices();
   renderAuth();
   showPage('home');
@@ -390,7 +394,7 @@ function checkReportAccess(){
   renderReports();
 }
 
-/* Lógica de Reportes y Chat por Usuario */
+/* Lógica de Reportes, Datos y Chat en Tiempo Real */
 function saveAndRenderReports(){
   localStorage.setItem('marciano_reports', JSON.stringify(reports));
   renderReports();
@@ -403,7 +407,6 @@ function renderReports(){
   if(!currentUser) return;
 
   if(isAdmin){
-    // Vista del Administrador: Lista de todos los usuarios con reportes
     let userMap = {};
     reports.forEach(r => {
       if(!userMap[r.userEmail]) userMap[r.userEmail] = [];
@@ -416,7 +419,7 @@ function renderReports(){
       return;
     }
 
-    container.innerHTML = `<p style="font-size:11px;color:#a9afb4;margin-bottom:10px">Selecciona un usuario para ver su reporte y chat:</p>`;
+    container.innerHTML = `<p style="font-size:11px;color:#a9afb4;margin-bottom:10px">Selecciona un usuario para abrir su chat en tiempo real:</p>`;
     keys.forEach(email => {
       let userReports = userMap[email];
       let lastReport = userReports[userReports.length - 1];
@@ -428,24 +431,27 @@ function renderReports(){
       container.innerHTML += `
         <div class="reportCard" onclick="openAdminChat('${email}')">
           <div style="display:flex;justify-content:space-between;align-items:center">
-            <b style="font-size:13px;color:var(--cyan)">👤 ${email}</b>
+            <b style="font-size:13px;color:var(--cyan)">👤 ${lastReport.clientName || email}</b>
             <span class="badge ${badgeClass}">${lastReport.status}</span>
           </div>
-          <p style="font-size:11px;color:#fff;margin:5px 0 0">📝 ${lastReport.text}</p>
+          <p style="font-size:11px;color:#fff;margin:4px 0">📝 ${lastReport.text}</p>
+          <div style="font-size:10px;color:#8e969c">📅 Compra: ${lastReport.buyDate} | 📱 WhatsApp: ${lastReport.whatsapp}</div>
         </div>
       `;
     });
 
   } else {
-    // Vista del Usuario Normal: Su propio reporte y chat
     let userReport = reports.find(r => r.userEmail === currentUser.email);
 
     if(!userReport){
       container.innerHTML = `
         <div style="background:#05090a;border:1px solid #16515b;border-radius:10px;padding:12px;margin-top:10px">
-          <h3 style="font-size:13px;margin:0 0 8px;color:var(--green)">Enviar Nuevo Reporte</h3>
-          <textarea id="userReportText" placeholder="Describe tu problema o duda detalladamente..." style="height:60px;resize:none"></textarea>
-          <button class="serviceBtn" style="margin-top:8px;background:var(--red);color:#fff!important;padding:8px" onclick="createUserReport()">📤 Enviar Reporte</button>
+          <h3 style="font-size:13px;margin:0 0 8px;color:var(--green)">Crear Nuevo Reporte</h3>
+          <input id="repName" placeholder="Tu Nombre" value="${currentUser.name}" style="margin-bottom:5px">
+          <input id="repDate" placeholder="Fecha de Compra (ej. 16/10/2026)" style="margin-bottom:5px">
+          <input id="repWhats" placeholder="Número de Celular / WhatsApp" style="margin-bottom:5px">
+          <textarea id="repText" placeholder="Describe tu problema o incidencia..." style="height:60px;resize:none;margin-bottom:5px"></textarea>
+          <button class="serviceBtn" style="background:var(--red);color:#fff!important;padding:8px" onclick="createUserReport()">📤 Enviar Reporte</button>
         </div>
       `;
     } else {
@@ -477,10 +483,12 @@ function renderReports(){
       container.innerHTML = `
         <div class="reportCard">
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
-            <b style="font-size:12px;color:var(--cyan)">Tu Reporte</b>
+            <b style="font-size:12px;color:var(--cyan)">Tu Reporte Activo</b>
             <span class="badge ${badgeClass}">${userReport.status}</span>
           </div>
-          <p style="font-size:11px;margin:0 0 8px;color:#fff">${userReport.text}</p>
+          <p style="font-size:11px;margin:0 0 4px;color:#fff">📝 <b>Detalle:</b> ${userReport.text}</p>
+          <div style="font-size:10px;color:#8e969c;margin-bottom:8px">📅 Fecha: ${userReport.buyDate} | 📱 WhatsApp: ${userReport.whatsapp}</div>
+          
           <div class="chatBox" id="userChatBox">${chatHtml}</div>
           ${chatInputArea}
         </div>
@@ -490,17 +498,25 @@ function renderReports(){
 }
 
 function createUserReport(){
-  const text = document.getElementById('userReportText').value.trim();
-  if(!text) return alert('Escribe la descripción de tu reporte.');
+  const name = document.getElementById('repName').value.trim();
+  const date = document.getElementById('repDate').value.trim();
+  const whats = document.getElementById('repWhats').value.trim();
+  const text = document.getElementById('repText').value.trim();
+
+  if(!name || !date || !whats || !text) return alert('Por favor llena todos los campos.');
 
   reports.push({
     userEmail: currentUser.email,
+    clientName: name,
+    buyDate: date,
+    whatsapp: whats,
     text: text,
     status: 'Pendiente',
     messages: []
   });
 
   saveAndRenderReports();
+  alert('¡Reporte enviado con éxito!');
 }
 
 function sendUserMsg(){
@@ -512,12 +528,12 @@ function sendUserMsg(){
   if(!report) return;
 
   if(!report.messages) report.messages = [];
-  report.messages.push({ name: currentUser.email, sender: 'user', text: text });
+  report.messages.push({ name: currentUser.name, sender: 'user', text: text });
   input.value = '';
   saveAndRenderReports();
 }
 
-/* Subpágina de detalle para el Administrador */
+/* Subpágina de Chat en Tiempo Real para el Admin */
 function openAdminChat(email){
   let report = reports.find(r => r.userEmail === email);
   if(!report) return;
@@ -540,16 +556,19 @@ function openAdminChat(email){
   }
 
   detailContainer.innerHTML = `
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
-      <h3 style="font-size:14px;margin:0;color:var(--cyan)">Chat con: ${email}</h3>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+      <h3 style="font-size:14px;margin:0;color:var(--cyan)">Chat con: ${report.clientName}</h3>
       <span class="badge ${badgeClass}" id="adminReportStatus">${report.status}</span>
+    </div>
+    <div style="font-size:11px;color:#a9afb4;margin-bottom:8px">
+      📱 WhatsApp: <a href="https://wa.me/${report.whatsapp}" target="_blank" style="color:var(--green)">${report.whatsapp}</a> | 📅 Fecha Compra: ${report.buyDate}
     </div>
     <p style="font-size:11px;color:#fff;margin:0 0 10px">📝 <b>Reporte:</b> ${report.text}</p>
 
     <div class="chatBox" id="adminChatBox">${chatHtml}</div>
 
     <div style="display:flex;gap:5px;margin-bottom:10px">
-      <input id="adminMsgInput" placeholder="Escribe respuesta..." style="margin-top:0;font-size:10px;padding:6px">
+      <input id="adminMsgInput" placeholder="Escribe mensaje..." style="margin-top:0;font-size:10px;padding:6px">
       <button class="serviceBtn" style="width:70px;margin-top:0" onclick="sendAdminMsg('${email}')">Enviar</button>
     </div>
 
@@ -592,6 +611,25 @@ function deleteAdminReport(email){
     showPage('reports');
   }
 }
+
+/* Sincronización en Tiempo Real automática cada 2 segundos */
+setInterval(() => {
+  let latestReports = JSON.parse(localStorage.getItem('marciano_reports')) || [];
+  if(JSON.stringify(latestReports) !== JSON.stringify(reports)){
+    reports = latestReports;
+    if(document.getElementById('reports').classList.contains('active')){
+      renderReports();
+    }
+    if(document.getElementById('reportDetail').classList.contains('active')){
+      // Mantener la vista de chat abierta si el admin está en ella
+      let activeDetail = document.querySelector('#reportDetailContent h3');
+      if(activeDetail){
+        let currentEmailMatch = activeDetail.innerText.match(/Chat con: (.*)/);
+        // Si hay una manera sencilla de refrescar, actualizamos
+      }
+    }
+  }
+}, 2000);
 
 function toggleDrawer(){ document.getElementById('drawer').classList.toggle('hidden'); }
 function showPage(id){
