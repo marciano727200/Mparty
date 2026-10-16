@@ -362,7 +362,7 @@ const server=http.createServer(async(req,res)=>{
       if(next.length===reports.length) return json(res,404,{error:"Solicitud no encontrada."});
       saveReports(next); return json(res,200,{ok:true});
     }
-        if(req.method==="GET"){
+            if(req.method==="GET"){
       const cleanUrl = req.url.split("?")[0];
       const filePath = cleanUrl === "/" 
         ? path.join(__dirname, "public", "index.html") 
@@ -388,3 +388,15 @@ const server=http.createServer(async(req,res)=>{
         return res.end(fs.readFileSync(filePath));
       }
     }
+    res.writeHead(404, { "Content-Type": "text/plain; charset=utf-8" });
+    res.end("No encontrado");
+  }catch(e){
+    console.error(e);
+    res.writeHead(500, { "Content-Type": "application/json; charset=utf-8" });
+    res.end(JSON.stringify({ error: "Error interno del servidor" }));
+  }
+});
+
+server.listen(PORT, () => {
+  console.log(`Servidor de MARCIANO.SHOP corriendo en puerto ${PORT}`);
+});
