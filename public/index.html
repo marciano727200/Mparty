@@ -16,11 +16,11 @@ body{min-height:100vh;background:radial-gradient(circle at 50% 0,#33000d 0,trans
 button,input,textarea,select{font:inherit}button{cursor:pointer}a{color:inherit;text-decoration:none}
 .app{width:100%;min-height:100vh}
 .top{position:sticky;top:0;z-index:50;background:rgba(2,3,3,.96);border-bottom:1px solid #5b0b1a;box-shadow:0 0 20px #ff003c22}
-.topin{max-width:720px;margin:auto;height:58px;padding:7px 10px;display:flex;align-items:center;gap:9px}
+.topin{max-width:960px;margin:auto;height:58px;padding:7px 10px;display:flex;align-items:center;gap:9px}
 .avatarLogo{width:42px;height:42px;border-radius:50%;display:grid;place-items:center;border:2px solid var(--red);background:#050807;box-shadow:0 0 12px #ff003c66;color:var(--green);font-size:22px}
 .brand{font-size:18px;font-weight:900;font-style:italic;letter-spacing:.4px;flex:1}.brand b{color:#fff}.brand em{color:var(--green);font-style:normal}
 .hamb{border:0;background:transparent;color:var(--green);font-size:27px;padding:3px 7px}
-main{max-width:720px;margin:auto;padding:10px 8px 86px}.page{display:none}.page.active{display:block}
+main{max-width:960px;margin:auto;padding:10px 8px 86px}.page{display:none}.page.active{display:block}
 .panel{border:1px solid #143b41;border-radius:14px;background:linear-gradient(145deg,#090d0e,#040606);padding:15px;margin-bottom:10px;box-shadow:inset 0 0 20px #00e5ff08}
 .hero h1{margin:0 0 4px;font-size:24px;color:var(--green)}.hero p{margin:0;color:var(--green);font-size:12px}
 
@@ -32,26 +32,29 @@ main{max-width:720px;margin:auto;padding:10px 8px 86px}.page{display:none}.page.
 }
 
 .servicesTitle{font-size:18px;font-weight:900;margin:15px 0 10px;color:var(--green);text-shadow:0 0 8px #39ff14}
-.servicesGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:10px}
-@media(min-width:500px){.servicesGrid{grid-template-columns:repeat(4,minmax(0,1fr))}}
+/* 4 COLUMNAS FIJAS HACIA LOS LADOS */
+.servicesGrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:10px}
+@media(max-width:768px){.servicesGrid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 
 .serviceCard{
- min-height:130px;border-radius:14px;padding:12px;text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:space-between;
+ min-height:140px;border-radius:12px;padding:8px;text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:space-between;
  background:linear-gradient(#050808,#050808) padding-box, linear-gradient(120deg,#ff003c,#ffea00,#00e5ff,#b000ff,#ff007f,#39ff14,#ff003c) border-box;
  border:2px solid transparent;background-size:auto,300% 300%;animation:rgbBorder 5s linear infinite;
- box-shadow:0 0 14px rgba(57,255,20,0.15);cursor:pointer;transition:transform .15s;
+ box-shadow:0 0 12px rgba(57,255,20,0.15);cursor:pointer;transition:transform .15s;
 }
 .serviceCard:active{transform:scale(0.97)}
-.serviceName{font-size:13px;font-weight:900;color:var(--green);text-shadow:0 0 6px #39ff14}
-.servicePrice{font-size:18px;font-weight:900;color:#fff;text-shadow:0 0 8px #00e5ff}
-.serviceBtn{width:100%;padding:6px;background:var(--green);color:#000;border:0;border-radius:8px;font-weight:900;font-size:11px}
+.serviceLogoBox{width:42px;height:42px;border-radius:50%;background:#020303;border:1px solid var(--green);display:grid;place-items:center;overflow:hidden;box-shadow:0 0 8px #39ff1444}
+.serviceLogoBox img{width:100%;height:100%;object-fit:cover}
+.serviceName{font-size:11px;font-weight:900;color:var(--green);text-shadow:0 0 5px #39ff14;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;width:100%}
+.servicePrice{font-size:15px;font-weight:900;color:#fff;text-shadow:0 0 7px #00e5ff}
+.serviceBtn{width:100%;padding:5px;background:var(--green);color:#000;border:0;border-radius:6px;font-weight:900;font-size:10px}
 
 /* Panel Admin de Servicios */
 .adminBox{margin-top:15px;padding:12px;border:1px dashed var(--red);border-radius:12px;background:rgba(255,0,60,0.05)}
 .adminBox h3{margin:0 0 8px;color:var(--red);font-size:14px}
 .adminListRow{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid #16353a;font-size:12px}
 
-.bottom{position:fixed;left:0;right:0;bottom:0;z-index:60;height:66px;background:rgba(2,3,3,.98);border-top:1px solid #4c0b17;display:grid;grid-template-columns:repeat(5,1fr)}
+.bottom{position:fixed;left:0;right:0;bottom:0;z-index:60;height:66px;background:rgba(2,3,3,.98);border-top:1px solid #4c0b17;display:grid;grid-template-columns:repeat(5,1fr);max-width:960px;margin:auto}
 .bottom button{border:0;background:transparent;color:var(--green);font-size:9px;display:flex;flex-direction:column;align-items:center;justify-content:center}
 .bottom button span{font-size:18px;margin-bottom:2px}
 .drawer{position:fixed;right:8px;top:58px;z-index:80;width:220px;background:#060909;border:1px solid var(--red);border-radius:12px;box-shadow:0 0 25px #ff003c44;padding:7px}
@@ -92,19 +95,19 @@ input,textarea,select{background:#05090a;color:var(--green)!important;border:1px
   <div class="panel">
    <div class="servicesTitle">SERVICIOS DE STREAMING</div>
    <div id="servicesContainer" class="servicesGrid">
-    <!-- Se cargan dinámicamente -->
+    <!-- Generado dinámicamente -->
    </div>
 
-   <!-- Panel de administración exclusivo para agregar/editar -->
+   <!-- Panel exclusivo del Administrador -->
    <div id="adminPanel" class="adminBox hidden">
     <h3>⚙️ Panel de Administración (Gestión de Servicios)</h3>
-    <p style="font-size:11px;color:#a9afb4;margin-bottom:8px">Agrega un nuevo servicio o administra los existentes:</p>
-    <input id="newServiceName" placeholder="Nombre del Servicio (ej. SPOTIFY)">
-    <input id="newServicePrice" placeholder="Precio (ej. $35)">
-    <button class="serviceBtn" style="margin-top:8px;background:var(--red);color:#fff!important" onclick="addService()">➕ Agregar Nuevo Servicio</button>
+    <p style="font-size:11px;color:#a9afb4;margin-bottom:8px">Escribe el nombre (ej. Netflix, Disney, Prime, HBO, etc.) y precio:</p>
+    <input id="newServiceName" placeholder="Nombre del Servicio">
+    <input id="newServicePrice" placeholder="Precio (ej. $70)">
+    <button class="serviceBtn" style="margin-top:8px;background:var(--red);color:#fff!important" onclick="addService()">➕ Agregar Servicio</button>
     
     <div style="margin-top:12px">
-     <h4 style="font-size:12px;margin:0 0 5px;color:var(--green)">Servicios Actuales:</h4>
+     <h4 style="font-size:12px;margin:0 0 5px;color:var(--green)">Servicios Registrados:</h4>
      <div id="adminServiceList"></div>
     </div>
    </div>
@@ -144,7 +147,7 @@ input,textarea,select{background:#05090a;color:var(--green)!important;border:1px
  <section id="auth" class="page">
   <div class="panel">
    <h2>👤 Mi Cuenta / Administrador</h2>
-   <p style="font-size:11px;color:#a9afb4">Inicia sesión con tu cuenta de administrador para desbloquear el panel de control de servicios.</p>
+   <p style="font-size:11px;color:#a9afb4">Inicia sesión como administrador para gestionar los servicios de streaming.</p>
    <input id="loginEmail" placeholder="Correo electrónico">
    <input id="loginPass" type="password" placeholder="Contraseña">
    <button class="serviceBtn" style="margin-top:10px;padding:10px;font-weight:900" onclick="handleLogin()">Iniciar Sesión</button>
@@ -176,6 +179,20 @@ let services = JSON.parse(localStorage.getItem('marciano_services')) || [
   { name: 'PARAMOUNT+', price: '$20' }
 ];
 
+// Función para asignar logotipos automáticos según el nombre que escribas
+function getServiceLogo(name){
+  const n = name.toUpperCase();
+  if(n.includes('NETFLIX')) return 'https://upload.wikimedia.org/wikipedia/commons/0/08/Netflix_2015_logo.svg';
+  if(n.includes('DISNEY')) return 'https://upload.wikimedia.org/wikipedia/commons/3/3e/Disney%2B_logo.svg';
+  if(n.includes('HBO') || n.includes('MAX')) return 'https://upload.wikimedia.org/wikipedia/commons/c/ce/Max_logo.svg';
+  if(n.includes('PRIME') || n.includes('AMAZON')) return 'https://upload.wikimedia.org/wikipedia/commons/1/11/Amazon_Prime_Video_logo_%282024%29.svg';
+  if(n.includes('YOUTUBE')) return 'https://upload.wikimedia.org/wikipedia/commons/0/09/YouTube_full-color_icon_%282017%29.svg';
+  if(n.includes('SPOTIFY')) return 'https://upload.wikimedia.org/wikipedia/commons/1/19/Spotify_logo_without_text.svg';
+  if(n.includes('CRUNCHYROLL')) return 'https://upload.wikimedia.org/wikipedia/commons/0/08/Crunchyroll_Logo.png';
+  if(n.includes('PARAMOUNT')) return 'https://upload.wikimedia.org/wikipedia/commons/c/c2/Paramount_Pictures_Logo_%282022%29.svg';
+  return 'https://api.iconify.design/lucide:tv.svg?color=%2339ff14'; // Icono por defecto
+}
+
 function saveAndRender(){
   localStorage.setItem('marciano_services', JSON.stringify(services));
   renderServices();
@@ -188,16 +205,18 @@ function renderServices(){
   adminList.innerHTML = '';
 
   services.forEach((s, index) => {
-    // Tarjeta visual principal
+    const logoUrl = getServiceLogo(s.name);
+    // Tarjeta visual principal en 4 columnas
     container.innerHTML += `
       <div class="serviceCard">
+       <div class="serviceLogoBox"><img src="${logoUrl}" alt="${s.name}" onerror="this.src='https://api.iconify.design/lucide:tv.svg?color=%2339ff14'"></div>
        <div class="serviceName">${s.name}</div>
        <div class="servicePrice">${s.price}</div>
        <button class="serviceBtn" onclick="alert('Adquirir ${s.name}')">Adquirir</button>
       </div>
     `;
 
-    // Lista del administrador para editar/eliminar
+    // Panel de administración para editar o eliminar
     if(isAdmin){
       adminList.innerHTML += `
         <div class="adminListRow">
@@ -215,7 +234,7 @@ function renderServices(){
 }
 
 function addService(){
-  if(!isAdmin) return alert('Acceso denegado. Solo el administrador puede agregar servicios.');
+  if(!isAdmin) return alert('Acceso denegado. Solo administrador.');
   const name = document.getElementById('newServiceName').value.trim();
   const price = document.getElementById('newServicePrice').value.trim();
   if(!name || !price) return alert('Llena ambos campos.');
@@ -227,7 +246,7 @@ function addService(){
 
 function deleteService(index){
   if(!isAdmin) return;
-  if(confirm('¿Eliminar este servicio?')){
+  if(confirm('¿Eliminar servicio?')){
     services.splice(index, 1);
     saveAndRender();
   }
@@ -245,22 +264,21 @@ function editService(index){
 
 function handleLogin(){
   const email = document.getElementById('loginEmail').value.trim();
-  // Puedes cambiar o validar aquí tu correo/contraseña de administrador
   if(email.length > 0){
     isAdmin = true;
     localStorage.setItem('marciano_admin', 'true');
-    alert('¡Bienvenido Administrador! Panel de control activado.');
+    alert('¡Bienvenido Administrador!');
     renderServices();
     showPage('home');
   } else {
-    alert('Ingresa tus datos');
+    alert('Ingresa correo');
   }
 }
 
 function handleLogout(){
   isAdmin = false;
   localStorage.setItem('marciano_admin', 'false');
-  alert('Sesión de administrador cerrada.');
+  alert('Sesión cerrada');
   renderServices();
 }
 
@@ -270,7 +288,6 @@ function showPage(id){
   document.getElementById(id).classList.add('active');
 }
 
-// Inicializar al cargar
 renderServices();
 </script>
 </body>
