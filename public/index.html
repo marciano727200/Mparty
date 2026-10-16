@@ -16,13 +16,13 @@ body{min-height:100vh;background:radial-gradient(circle at 50% 0,#33000d 0,trans
 button,input,textarea,select{font:inherit}button{cursor:pointer}a{color:inherit;text-decoration:none}
 .app{width:100%;min-height:100vh}
 .top{position:sticky;top:0;z-index:50;background:rgba(2,3,3,.96);border-bottom:1px solid #5b0b1a;box-shadow:0 0 20px #ff003c22}
-.topin{max-width:1100px;margin:auto;height:58px;padding:7px 10px;display:flex;align-items:center;gap:9px}
+.topin{max-width:1200px;margin:auto;height:58px;padding:7px 10px;display:flex;align-items:center;gap:9px}
 .avatarLogo{width:42px;height:42px;border-radius:50%;display:grid;place-items:center;border:2px solid var(--red);background:#050807;box-shadow:0 0 12px #ff003c66;color:var(--green);font-size:22px}
 .brand{font-size:18px;font-weight:900;font-style:italic;letter-spacing:.4px;flex:1}.brand b{color:#fff}.brand em{color:var(--green);font-style:normal}
 .hamb{border:0;background:transparent;color:var(--green);font-size:27px;padding:3px 7px}
-main{max-width:1100px;margin:auto;padding:10px 8px 86px}.page{display:none}.page.active{display:block}
-.panel{border:1px solid #143b41;border-radius:14px;background:linear-gradient(145deg,#090d0e,#040606);padding:15px;margin-bottom:10px;box-shadow:inset 0 0 20px #00e5ff08}
-.hero h1{margin:0 0 4px;font-size:24px;color:var(--green)}.hero p{margin:0;color:var(--green);font-size:12px}
+main{max-width:1200px;margin:auto;padding:10px 4px 86px}.page{display:none}.page.active{display:block}
+.panel{border:1px solid #143b41;border-radius:14px;background:linear-gradient(145deg,#090d0e,#040606);padding:10px;margin-bottom:10px;box-shadow:inset 0 0 20px #00e5ff08}
+.hero h1{margin:0 0 4px;font-size:22px;color:var(--green)}.hero p{margin:0;color:var(--green);font-size:11px}
 
 /* EFECTO BORDER RGB MULTICOLOR */
 @keyframes rgbBorder{
@@ -31,34 +31,32 @@ main{max-width:1100px;margin:auto;padding:10px 8px 86px}.page{display:none}.page
  100%{background-position:0 0,0% 50%}
 }
 
-.servicesTitle{font-size:18px;font-weight:900;margin:15px 0 10px;color:var(--green);text-shadow:0 0 8px #39ff14}
+.servicesTitle{font-size:16px;font-weight:900;margin:12px 0 8px;color:var(--green);text-shadow:0 0 8px #39ff14}
 
-/* 4 COLUMNAS ESTRICTAS HACIA LOS LADOS EN TODO MOMENTO */
-.servicesGrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:10px}
-@media(max-width:650px){.servicesGrid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+/* 4 COLUMNAS FORZADAS A LA FUERZA EN MÓVIL Y PC */
+.servicesGrid{display:grid !important;grid-template-columns: repeat(4, 1fr) !important;gap:5px !important;margin-top:8px}
 
 .serviceCard{
- min-height:150px;border-radius:12px;padding:8px;text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:space-between;
+ min-height:120px;border-radius:10px;padding:5px;text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:space-between;
  background:linear-gradient(#050808,#050808) padding-box, linear-gradient(120deg,#ff003c,#ffea00,#00e5ff,#b000ff,#ff007f,#39ff14,#ff003c) border-box;
  border:2px solid transparent;background-size:auto,300% 300%;animation:rgbBorder 5s linear infinite;
- box-shadow:0 0 12px rgba(57,255,20,0.15);cursor:pointer;transition:transform .15s;
+ box-shadow:0 0 8px rgba(57,255,20,0.15);cursor:pointer;
 }
-.serviceCard:active{transform:scale(0.97)}
 
-/* LOGO CUADRADO */
-.serviceLogoBox{width:46px;height:46px;border-radius:8px;background:#020303;border:1px solid var(--green);display:grid;place-items:center;overflow:hidden;box-shadow:0 0 8px #39ff1444}
+/* LOGO CUADRADO COMPACTO */
+.serviceLogoBox{width:36px;height:36px;border-radius:6px;background:#020303;border:1px solid var(--green);display:grid;place-items:center;overflow:hidden;box-shadow:0 0 6px #39ff1444}
 .serviceLogoBox img{width:100%;height:100%;object-fit:cover}
 
-.serviceName{font-size:11px;font-weight:900;color:var(--green);text-shadow:0 0 5px #39ff14;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;width:100%}
-.servicePrice{font-size:15px;font-weight:900;color:#fff;text-shadow:0 0 7px #00e5ff}
-.serviceBtn{width:100%;padding:5px;background:var(--green);color:#000;border:0;border-radius:6px;font-weight:900;font-size:10px}
+.serviceName{font-size:9px;font-weight:900;color:var(--green);text-shadow:0 0 4px #39ff14;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;width:100%}
+.servicePrice{font-size:12px;font-weight:900;color:#fff;text-shadow:0 0 5px #00e5ff}
+.serviceBtn{width:100%;padding:4px 2px;background:var(--green);color:#000;border:0;border-radius:5px;font-weight:900;font-size:9px}
 
 /* Panel Admin de Servicios */
 .adminBox{margin-top:15px;padding:12px;border:1px dashed var(--red);border-radius:12px;background:rgba(255,0,60,0.05)}
 .adminBox h3{margin:0 0 8px;color:var(--red);font-size:14px}
 .adminListRow{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid #16353a;font-size:12px}
 
-.bottom{position:fixed;left:0;right:0;bottom:0;z-index:60;height:66px;background:rgba(2,3,3,.98);border-top:1px solid #4c0b17;display:grid;grid-template-columns:repeat(5,1fr);max-width:1100px;margin:auto}
+.bottom{position:fixed;left:0;right:0;bottom:0;z-index:60;height:66px;background:rgba(2,3,3,.98);border-top:1px solid #4c0b17;display:grid;grid-template-columns:repeat(5,1fr);max-width:1200px;margin:auto}
 .bottom button{border:0;background:transparent;color:var(--green);font-size:9px;display:flex;flex-direction:column;align-items:center;justify-content:center}
 .bottom button span{font-size:18px;margin-bottom:2px}
 .drawer{position:fixed;right:8px;top:58px;z-index:80;width:220px;background:#060909;border:1px solid var(--red);border-radius:12px;box-shadow:0 0 25px #ff003c44;padding:7px}
@@ -105,7 +103,7 @@ input,textarea,select{background:#05090a;color:var(--green)!important;border:1px
    <!-- Panel exclusivo del Administrador -->
    <div id="adminPanel" class="adminBox hidden">
     <h3>⚙️ Panel de Administración (Gestión de Servicios)</h3>
-    <p style="font-size:11px;color:#a9afb4;margin-bottom:8px">Escribe el nombre de cualquier plataforma (ej. Netflix, Roblox, Free Fire, Spotify, etc.) y su precio:</p>
+    <p style="font-size:11px;color:#a9afb4;margin-bottom:8px">Escribe el nombre de la plataforma y su precio:</p>
     <input id="newServiceName" placeholder="Nombre del Servicio / Producto">
     <input id="newServicePrice" placeholder="Precio (ej. $70)">
     <button class="serviceBtn" style="margin-top:8px;background:var(--red);color:#fff!important" onclick="addService()">➕ Agregar Producto</button>
@@ -195,15 +193,14 @@ let services = JSON.parse(localStorage.getItem('marciano_services')) || [
   { name: 'FACEBOOK', price: '$10' },
   { name: 'INSTAGRAM', price: '$10' },
   { name: 'TIKTOK', price: '$15' },
-  { name: 'DIAMANTES DE FREE FIRE', price: '$60' },
-  { name: 'PASE DE FREE FIRE', price: '$90' },
-  { name: 'MONEDAS DE MINECRAFT', price: '$50' },
-  { name: 'ROBUX DE ROBLOX', price: '$80' },
-  { name: 'CODPOINTS DE CODM', price: '$70' },
+  { name: 'DIAMANTES FREE FIRE', price: '$60' },
+  { name: 'PASE FREE FIRE', price: '$90' },
+  { name: 'MONEDAS MINECRAFT', price: '$50' },
+  { name: 'ROBUX ROBLOX', price: '$80' },
+  { name: 'CODPOINTS CODM', price: '$70' },
   { name: 'LIBROS', price: '$20' }
 ];
 
-// Detector automático de logotipos cuadrados para cada plataforma
 function getServiceLogo(name){
   const n = name.toUpperCase();
   if(n.includes('NETFLIX')) return 'https://upload.wikimedia.org/wikipedia/commons/0/08/Netflix_2015_logo.svg';
@@ -214,7 +211,7 @@ function getServiceLogo(name){
   if(n.includes('PARAMOUNT')) return 'https://upload.wikimedia.org/wikipedia/commons/c/c2/Paramount_Pictures_Logo_%282022%29.svg';
   if(n.includes('CRUNCHYROLL')) return 'https://upload.wikimedia.org/wikipedia/commons/0/08/Crunchyroll_Logo.png';
   if(n.includes('UNIVERSAL')) return 'https://upload.wikimedia.org/wikipedia/commons/6/6f/Universal_Pictures_2012_logo.svg';
-  if(n.includes('APPLE TV') || n.includes('APPLE MUSIC')) return 'https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg';
+  if(n.includes('APPLE')) return 'https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg';
   if(n.includes('SPOTIFY')) return 'https://upload.wikimedia.org/wikipedia/commons/1/19/Spotify_logo_without_text.svg';
   if(n.includes('YOUTUBE')) return 'https://upload.wikimedia.org/wikipedia/commons/0/09/YouTube_full-color_icon_%282017%29.svg';
   if(n.includes('PORNHUB')) return 'https://upload.wikimedia.org/wikipedia/commons/b/b8/Pornhub_logo.svg';
