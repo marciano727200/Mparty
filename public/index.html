@@ -38,20 +38,20 @@ main{max-width:1200px;margin:auto;padding:10px 4px 86px}.page{display:none}.page
 @media(max-width:600px){.servicesGrid{grid-template-columns: repeat(3, 1fr) !important;}}
 
 .serviceCard{
- aspect-ratio: 1 / 1; /* CUADRADO PERFECTO */
+ aspect-ratio: 1 / 1;
  border-radius:10px;padding:6px;text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:space-between;
  background:linear-gradient(#050808,#050808) padding-box, linear-gradient(120deg,#ff003c,#ffea00,#00e5ff,#b000ff,#ff007f,#39ff14,#ff003c) border-box;
  border:2px solid transparent;background-size:auto,300% 300%;animation:rgbBorder 5s linear infinite;
  box-shadow:0 0 8px rgba(57,255,20,0.15);cursor:pointer;
 }
 
-/* LOGO CUADRADO INTERNO */
-.serviceLogoBox{width:34px;height:34px;border-radius:6px;background:#020303;border:1px solid var(--green);display:grid;place-items:center;overflow:hidden;box-shadow:0 0 5px #39ff1444}
+/* LOGO CUADRADO */
+.serviceLogoBox{width:32px;height:32px;border-radius:6px;background:#020303;border:1px solid var(--green);display:grid;place-items:center;overflow:hidden;box-shadow:0 0 5px #39ff1444}
 .serviceLogoBox img{width:100%;height:100%;object-fit:cover}
 
-.serviceName{font-size:8px;font-weight:900;color:var(--green);text-shadow:0 0 3px #39ff14;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;width:100%}
-.servicePrice{font-size:11px;font-weight:900;color:#fff;text-shadow:0 0 4px #00e5ff}
-.serviceBtn{width:100%;padding:3px;background:var(--green);color:#000;border:0;border-radius:4px;font-weight:900;font-size:8px}
+.serviceName{font-size:7.5px;font-weight:900;color:var(--green);text-shadow:0 0 3px #39ff14;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;width:100%}
+.servicePrice{font-size:9.5px;font-weight:900;color:#fff;text-shadow:0 0 4px #00e5ff;white-space:pre-line;line-height:1.15;max-height:28px;overflow:hidden}
+.serviceBtn{width:100%;padding:3px;background:var(--green);color:#000;border:0;border-radius:4px;font-weight:900;font-size:8px;text-align:center;display:block}
 
 /* Panel Admin de Servicios */
 .adminBox{margin-top:15px;padding:12px;border:1px dashed var(--red);border-radius:12px;background:rgba(255,0,60,0.05)}
@@ -105,10 +105,11 @@ input,textarea,select{background:#05090a;color:var(--green)!important;border:1px
    <!-- Panel exclusivo del Administrador -->
    <div id="adminPanel" class="adminBox hidden">
     <h3>⚙️ Panel de Administración (Gestión de Servicios)</h3>
-    <p style="font-size:11px;color:#a9afb4;margin-bottom:8px">Escribe el nombre de la plataforma y su precio:</p>
-    <input id="newServiceName" placeholder="Nombre del Servicio / Producto">
-    <input id="newServicePrice" placeholder="Precio (ej. $70)">
-    <button class="serviceBtn" style="margin-top:8px;background:var(--red);color:#fff!important" onclick="addService()">➕ Agregar Producto</button>
+    <p style="font-size:11px;color:#a9afb4;margin-bottom:8px">Agrega productos, precios con salto de línea y enlace de compra:</p>
+    <input id="newServiceName" placeholder="Nombre (ej. Netflix)">
+    <textarea id="newServicePrice" placeholder="Precio (puedes dar Enter para varios precios)" style="height:60px;resize:none;margin-top:5px"></textarea>
+    <input id="newServiceLink" placeholder="Enlace de compra (ej. https://wa.me/...)" style="margin-top:5px">
+    <button class="serviceBtn" style="margin-top:8px;background:var(--red);color:#fff!important;padding:8px" onclick="addService()">➕ Agregar Producto</button>
     
     <div style="margin-top:12px">
      <h4 style="font-size:12px;margin:0 0 5px;color:var(--green)">Registros Actuales:</h4>
@@ -173,62 +174,59 @@ input,textarea,select{background:#05090a;color:var(--green)!important;border:1px
 let isAdmin = localStorage.getItem('marciano_admin') === 'true';
 
 let services = JSON.parse(localStorage.getItem('marciano_services')) || [
-  { name: 'NETFLIX', price: '$70' },
-  { name: 'DISNEY', price: '$45' },
-  { name: 'MAX', price: '$25' },
-  { name: 'PRIME VIDEO', price: '$15' },
-  { name: 'VIX', price: '$20' },
-  { name: 'PARAMOUNT', price: '$20' },
-  { name: 'CRUNCHYROLL', price: '$20' },
-  { name: 'UNIVERSAL', price: '$25' },
-  { name: 'APPLE TV', price: '$30' },
-  { name: 'FOX ONE', price: '$20' },
-  { name: 'SPOTIFY', price: '$35' },
-  { name: 'YOUTUBE', price: '$30' },
-  { name: 'APPLE MUSIC', price: '$30' },
-  { name: 'PORNHUB', price: '$50' },
-  { name: 'CANVA PRO', price: '$25' },
-  { name: 'CAPCUT PRO', price: '$25' },
-  { name: 'GEMINI PRO', price: '$40' },
-  { name: 'CHAT GPT', price: '$50' },
-  { name: 'ADOBE', price: '$80' },
-  { name: 'FACEBOOK', price: '$10' },
-  { name: 'INSTAGRAM', price: '$10' },
-  { name: 'TIKTOK', price: '$15' },
-  { name: 'FREE FIRE', price: '$60' },
-  { name: 'MINECRAFT', price: '$50' },
-  { name: 'ROBLOX', price: '$80' },
-  { name: 'CODM', price: '$70' },
-  { name: 'LIBROS', price: '$20' }
+  { name: 'NETFLIX', price: '$25', link: '#' },
+  { name: 'DISNEY', price: '$15', link: '#' },
+  { name: 'HBO MAX', price: '$30', link: '#' },
+  { name: 'PRIME VIDEO', price: '$35', link: '#' },
+  { name: 'VIX', price: '$20', link: '#' },
+  { name: 'PARAMOUNT', price: '$120', link: '#' },
+  { name: 'CRUNCHYROLL', price: '$25', link: '#' },
+  { name: 'UNIVERSAL', price: '$70', link: '#' },
+  { name: 'APPLE TV', price: '$5', link: '#' },
+  { name: 'FOX ONE', price: '$15', link: '#' },
+  { name: 'SPOTIFY 1M', price: '$50', link: '#' },
+  { name: 'SPOTIFY 4M', price: '$125', link: '#' },
+  { name: 'YOUTUBE PREMIUM', price: '$25', link: '#' },
+  { name: 'APPLE MUSIC', price: '$25', link: '#' },
+  { name: 'PORN HUB', price: '$45', link: '#' },
+  { name: 'CANVA PRO', price: '$30', link: '#' },
+  { name: 'CAPCUT PRO', price: '$75', link: '#' },
+  { name: 'GEMINI PRO', price: '$100', link: '#' },
+  { name: 'CHAT GPT', price: '$75', link: '#' },
+  { name: 'ADOBE', price: '1M $25\n2M $50', link: '#' },
+  { name: 'FACEBOOK', price: '$70', link: '#' },
+  { name: 'INSTAGRAM', price: '$100', link: '#' },
+  { name: 'TIKTOK', price: '$85', link: '#' },
+  { name: 'FREE FIRE', price: 'POR ID', link: '#' },
+  { name: 'MINECRAFT', price: '$50', link: '#' },
+  { name: 'ROBLOX', price: 'VARIOS', link: '#' }
 ];
 
 function getServiceLogo(name){
   const n = name.toUpperCase();
-  if(n.includes('NETFLIX')) return 'https://images.ctfassets.net/4cd45et68cgf/7LrExJ6PAj6MSIPkDyCO86/542b1dfabbf3959908f69136c1753f2b/Netflix-Brand-Logo.png';
-  if(n.includes('DISNEY')) return 'https://static.wikia.nocookie.net/logopedia/images/3/3a/Disney%2B_icon_%282019%29.svg';
-  if(n.includes('MAX') || n.includes('HBO')) return 'https://images.ctfassets.net/bs8ntwkklfhl/6D2g3w9X0yY6q6o0g000e4/8d154bc8d7b3528bfa17c5b3648a7b6b/max_app_icon.png';
-  if(n.includes('PRIME')) return 'https://images.justwatch.com/icon/52449861/s100/prime-video.webp';
-  if(n.includes('VIX')) return 'https://images.justwatch.com/icon/257321685/s100/vix.webp';
-  if(n.includes('PARAMOUNT')) return 'https://images.justwatch.com/icon/305513233/s100/paramount-plus.webp';
-  if(n.includes('CRUNCHYROLL')) return 'https://images.justwatch.com/icon/207297746/s100/crunchyroll.webp';
-  if(n.includes('UNIVERSAL')) return 'https://images.justwatch.com/icon/167733470/s100/universal-plus.webp';
+  if(n.includes('NETFLIX')) return 'https://upload.wikimedia.org/wikipedia/commons/0/08/Netflix_2015_logo.svg';
+  if(n.includes('DISNEY')) return 'https://upload.wikimedia.org/wikipedia/commons/3/3e/Disney%2B_logo.svg';
+  if(n.includes('MAX') || n.includes('HBO')) return 'https://upload.wikimedia.org/wikipedia/commons/c/ce/Max_logo.svg';
+  if(n.includes('PRIME')) return 'https://upload.wikimedia.org/wikipedia/commons/1/11/Amazon_Prime_Video_logo_%282024%29.svg';
+  if(n.includes('VIX')) return 'https://upload.wikimedia.org/wikipedia/commons/e/e0/ViX_logo_%282023%29.svg';
+  if(n.includes('PARAMOUNT')) return 'https://upload.wikimedia.org/wikipedia/commons/c/c2/Paramount_Pictures_Logo_%282022%29.svg';
+  if(n.includes('CRUNCHYROLL')) return 'https://upload.wikimedia.org/wikipedia/commons/0/08/Crunchyroll_Logo.png';
+  if(n.includes('UNIVERSAL')) return 'https://upload.wikimedia.org/wikipedia/commons/6/6f/Universal_Pictures_2012_logo.svg';
   if(n.includes('APPLE')) return 'https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg';
-  if(n.includes('SPOTIFY')) return 'https://storage.googleapis.com/pr-newsroom-wp/1/2023/05/Spotify_Primary_Logo_RGB_Green.png';
+  if(n.includes('SPOTIFY')) return 'https://upload.wikimedia.org/wikipedia/commons/1/19/Spotify_logo_without_text.svg';
   if(n.includes('YOUTUBE')) return 'https://upload.wikimedia.org/wikipedia/commons/0/09/YouTube_full-color_icon_%282017%29.svg';
-  if(n.includes('PORNHUB')) return 'https://images.uncyc.org/commons/thumb/1/18/Pornhub_logo_old.png/120px-Pornhub_logo_old.png';
-  if(n.includes('CANVA')) return 'https://static.canva.com/static/images/canva_favicon_128.png';
-  if(n.includes('CAPCUT')) return 'https://lf16-web-use.capcut.com/obj/capcut-web-use-us/common/capcut_logo.png';
+  if(n.includes('PORN')) return 'https://upload.wikimedia.org/wikipedia/commons/b/b8/Pornhub_logo.svg';
+  if(n.includes('CANVA')) return 'https://upload.wikimedia.org/wikipedia/commons/0/08/Canva_icon_2021.svg';
+  if(n.includes('CAPCUT')) return 'https://upload.wikimedia.org/wikipedia/commons/8/84/CapCut_logo.svg';
   if(n.includes('GEMINI')) return 'https://www.gstatic.com/lamda/images/gemini_sparkle_v002_d4735304ff6292a690345.svg';
   if(n.includes('CHAT GPT')) return 'https://upload.wikimedia.org/wikipedia/commons/0/04/ChatGPT_logo.svg';
   if(n.includes('ADOBE')) return 'https://upload.wikimedia.org/wikipedia/commons/7/7b/Adobe_Systems_logo_and_wordmark_%282020%29.svg';
   if(n.includes('FACEBOOK')) return 'https://upload.wikimedia.org/wikipedia/commons/b/b8/2021_Facebook_icon.svg';
   if(n.includes('INSTAGRAM')) return 'https://upload.wikimedia.org/wikipedia/commons/e/e7/Instagram_logo_2016.svg';
   if(n.includes('TIKTOK')) return 'https://upload.wikimedia.org/wikipedia/commons/3/34/Ionicons_logo-tiktok.svg';
-  if(n.includes('FREE FIRE') || n.includes('DIAMANTES') || n.includes('PASE')) return 'https://yt3.googleusercontent.com/ytc/AIdro_k6-xYgL2QvX8sJ7h5X9s8vX2wQ5z8vX2wQ5z8=s900-c-k-c0x00ffffff-no-rj';
-  if(n.includes('MINECRAFT')) return 'https://www.minecraft.net/content/dam/games/minecraft/key-art/The-Wild-Update_Logo.png';
-  if(n.includes('ROBLOX') || n.includes('ROBUX')) return 'https://images.rbxcdn.com/13ee08f0a827553b97b0a316719b4e1d.png';
-  if(n.includes('CODM')) return 'https://images.justwatch.com/icon/250529681/s100/call-of-duty-mobile.webp';
-  if(n.includes('LIBROS')) return 'https://api.iconify.design/lucide:book-open.svg?color=%2339ff14';
+  if(n.includes('FREE FIRE')) return 'https://upload.wikimedia.org/wikipedia/commons/4/4e/Garena_Free_Fire_logo.svg';
+  if(n.includes('MINECRAFT')) return 'https://upload.wikimedia.org/wikipedia/commons/5/59/Minecraft_box_art.png';
+  if(n.includes('ROBLOX')) return 'https://upload.wikimedia.org/wikipedia/commons/7/7c/Roblox_Logo_2022.svg';
   return 'https://api.iconify.design/lucide:tv.svg?color=%2339ff14';
 }
 
@@ -245,19 +243,21 @@ function renderServices(){
 
   services.forEach((s, index) => {
     const logoUrl = getServiceLogo(s.name);
+    const targetLink = s.link && s.link !== '#' ? s.link : `https://wa.me/?text=Hola,%20quiero%20adquirir%20${encodeURIComponent(s.name)}`;
+    
     container.innerHTML += `
       <div class="serviceCard">
        <div class="serviceLogoBox"><img src="${logoUrl}" alt="${s.name}" onerror="this.src='https://api.iconify.design/lucide:tv.svg?color=%2339ff14'"></div>
        <div class="serviceName">${s.name}</div>
        <div class="servicePrice">${s.price}</div>
-       <button class="serviceBtn" onclick="alert('Adquirir ${s.name}')">Adquirir</button>
+       <a href="${targetLink}" target="_blank" class="serviceBtn">Adquirir</a>
       </div>
     `;
 
     if(isAdmin){
       adminList.innerHTML += `
         <div class="adminListRow">
-          <span><b>${s.name}</b> (${s.price})</span>
+          <span><b>${s.name}</b></span>
           <div>
             <button onclick="editService(${index})" style="background:#07100a;color:var(--green);border:1px solid var(--green);padding:3px 6px;border-radius:4px;font-size:10px">Editar</button>
             <button onclick="deleteService(${index})" style="background:#33000d;color:var(--red);border:1px solid var(--red);padding:3px 6px;border-radius:4px;font-size:10px">Eliminar</button>
@@ -274,10 +274,12 @@ function addService(){
   if(!isAdmin) return alert('Acceso denegado.');
   const name = document.getElementById('newServiceName').value.trim();
   const price = document.getElementById('newServicePrice').value.trim();
-  if(!name || !price) return alert('Llena ambos campos.');
-  services.push({ name, price });
+  const link = document.getElementById('newServiceLink').value.trim() || '#';
+  if(!name || !price) return alert('Llena el nombre y el precio.');
+  services.push({ name, price, link });
   document.getElementById('newServiceName').value = '';
   document.getElementById('newServicePrice').value = '';
+  document.getElementById('newServiceLink').value = '';
   saveAndRender();
 }
 
@@ -292,9 +294,10 @@ function deleteService(index){
 function editService(index){
   if(!isAdmin) return;
   const newName = prompt('Nuevo nombre:', services[index].name);
-  const newPrice = prompt('Nuevo precio:', services[index].price);
+  const newPrice = prompt('Nuevo precio (puedes usar Enter):', services[index].price);
+  const newLink = prompt('Nuevo enlace de compra:', services[index].link || '#');
   if(newName && newPrice){
-    services[index] = { name: newName, price: newPrice };
+    services[index] = { name: newName, price: newPrice, link: newLink };
     saveAndRender();
   }
 }
