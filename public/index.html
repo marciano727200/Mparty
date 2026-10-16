@@ -165,4 +165,40 @@ input,textarea,select,.search{color:var(--green)!important}
   <div class="authLogo">👽</div><h2 style="text-align:center;color:var(--green)">Acceso a MARCIANO.SHOP</h2>
   <p class="hint" style="text-align:center">Para continuar debes registrarte o iniciar sesión.</p>
   <div class="tabs"><button id="gateLoginTab" class="active" onclick="gateMode('login')">Iniciar sesión</button><button id="gateRegTab" onclick="gateMode('register')">Registrarse</button></div>
-  <div class="formGrid"><input id="gName" class="hidden" placeholder="Nombre"><input id="gEmail" type="email" placeholder="Correo electrónico"><input id="gPass" type="password" placeholder="Contraseña (mínimo 6 caracteres)"><button id="gBtn" class
+  <div class="formGrid"><input id="gName" class="hidden" placeholder="Nombre"><input id="gEmail" type="email" placeholder="Correo electrónico"><input id="gPass" type="password" placeholder="Contraseña (mínimo 6 caracteres)"><button id="gBtn" class="btn green" onclick="submitGate()">Continuar</button></div>
+ </div>
+</div>
+
+<main>
+ <!-- Aquí va el contenido principal de tus páginas -->
+ <section id="homePage" class="page active">
+  <div class="panel hero">
+   <h1>MARCIANO.SHOP</h1>
+   <p>Bienvenido al sistema principal con salas de cine y juegos arcade.</p>
+  </div>
+ </section>
+</main>
+
+<nav class="bottom">
+ <button onclick="showPage('home')" class="active"><span>🏠</span>Inicio</button>
+ <button onclick="showPage('movies')"><span>🎬</span>Películas</button>
+ <button onclick="showPage('game')"><span>🎮</span>Arcade</button>
+ <button onclick="showPage('chat')"><span>💬</span>Chat</button>
+ <button onclick="showPage('auth')"><span>👤</span>Cuenta</button>
+</nav>
+</div>
+
+<script>
+function toggleDrawer(){ document.getElementById('drawer').classList.toggle('hidden'); }
+function showPage(p){ document.querySelectorAll('.page').forEach(el=>el.classList.remove('active')); }
+function toggleTheme(){ document.body.classList.toggle('light'); }
+function notifyMe(){ alert('Notificaciones activadas'); }
+function gateMode(m){ 
+  document.getElementById('gateLoginTab').classList.toggle('active', m==='login');
+  document.getElementById('gateRegTab').classList.toggle('active', m==='register');
+  document.getElementById('gName').classList.toggle('hidden', m==='login');
+}
+function submitGate(){ document.getElementById('authGate').classList.add('hidden'); }
+</script>
+</body>
+</html>
