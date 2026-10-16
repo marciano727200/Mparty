@@ -35,6 +35,11 @@ main{max-width:720px;margin:auto;padding:10px 8px 86px}.page{display:none}.page.
 body *{color:var(--green)!important}
 .btn.green,.movie button{color:#000!important}
 input,textarea,select{background:#05090a;color:var(--green)!important;border:1px solid #16515b;border-radius:9px;padding:10px;width:100%;margin-top:5px}
+
+/* Estilos de Mparty para la sección de Películas */
+.mpartyBox{margin-top:10px;padding:12px;border:2px solid transparent;border-radius:13px;background:linear-gradient(#050809,#050809) padding-box,linear-gradient(120deg,var(--red),var(--green),var(--cyan),var(--red)) border-box;background-size:auto,300% 300%;box-shadow:0 0 16px #39ff1418}
+.roomPlayerWrap{position:relative;width:100%;aspect-ratio:16/9;background:#000;border:1px solid #16515b;border-radius:9px;overflow:hidden;margin-top:8px}
+.roomPlayerWrap iframe,.roomPlayerWrap video{width:100%;height:100%;border:0;display:block;background:#000}
 </style>
 </head>
 <body>
@@ -46,7 +51,7 @@ input,textarea,select{background:#05090a;color:var(--green)!important;border:1px
 
 <div id="drawer" class="drawer hidden">
  <button onclick="showPage('home'); toggleDrawer();">🏠 Inicio</button>
- <button onclick="showPage('movies'); toggleDrawer();">🎬 PELÍCULAS & +</button>
+ <button onclick="showPage('movies'); toggleDrawer();">🎬 PELÍCULAS & Mparty</button>
  <button onclick="showPage('game'); toggleDrawer();">🎮 Jugar Arcade</button>
  <button onclick="showPage('chat'); toggleDrawer();">💬 Chat Público</button>
  <button onclick="showPage('auth'); toggleDrawer();">👤 Mi cuenta</button>
@@ -55,52 +60,59 @@ input,textarea,select{background:#05090a;color:var(--green)!important;border:1px
 <main>
  <section id="home" class="page active">
   <div class="panel hero">
-   <h1>¡Bienvenido a MARCIANO.SHOP!</h1>
-   <p>El sistema en línea está activo y funcionando al 100%.</p>
+   <h1>MARCIANO.SHOP</h1>
+   <p>Bienvenido de vuelta a tu plataforma oficial con diseño neón exclusivo.</p>
   </div>
   <div class="panel">
-   <h2>Accesos Rápidos</h2>
-   <p>Usa el menú inferior o superior para explorar las salas de cine y juegos.</p>
+   <h2>Panel Principal</h2>
+   <p>Explora el menú superior o inferior para acceder a las salas de Mparty, el arcade y las herramientas de usuario.</p>
   </div>
  </section>
 
  <section id="movies" class="page">
   <div class="panel">
-   <h2>Salas de Películas & Watch Party</h2>
-   <p>Selecciona una sala para iniciar:</p>
-   <div class="movies">
-    <div class="movie"><b>Sala 1: Estrenos</b><button onclick="alert('Abriendo Sala 1')">Entrar</button></div>
-    <div class="movie"><b>Sala 2: Acción</b><button onclick="alert('Abriendo Sala 2')">Entrar</button></div>
+   <h2>🎬 PELÍCULAS & Mparty Watch Party</h2>
+   <p>Salas exclusivas integradas con sincronización en tiempo real:</p>
+   
+   <div class="mpartyBox">
+    <h3>Sala Principal Mparty</h3>
+    <p>Reproductor integrado de películas:</p>
+    <div class="roomPlayerWrap">
+     <!-- Aquí puedes colocar tu reproductor o iframe de Mparty / OneDrive -->
+     <div style="display:grid;place-items:center;height:100%;background:#030506;color:var(--green);font-size:12px;font-weight:900;">
+      🎥 SALA MPARTY ACTIVA
+     </div>
+    </div>
    </div>
   </div>
  </section>
 
  <section id="game" class="page">
   <div class="panel">
-   <h2>Marciano Arcade (10 Juegos)</h2>
-   <p>Selecciona tu juego favorito y diviértete.</p>
+   <h2>🎮 Marciano Arcade</h2>
+   <p>Selecciona tu juego y disfruta de la suite clásica.</p>
   </div>
  </section>
 
  <section id="chat" class="page">
   <div class="panel">
-   <h2>Chat Público</h2>
-   <p>Escribe con la comunidad en tiempo real.</p>
+   <h2>💬 Chat de la Comunidad</h2>
+   <p>Conéctate y conversa en tiempo real.</p>
   </div>
  </section>
 
  <section id="auth" class="page">
   <div class="panel">
-   <h2>Mi Cuenta / Administrador</h2>
+   <h2>👤 Mi Cuenta</h2>
    <input placeholder="Correo electrónico">
    <input type="password" placeholder="Contraseña">
-   <button class="btn green" style="margin-top:10px;background:var(--green);border:0;width:100%;padding:10px;font-weight:900" onclick="alert('Sesión iniciada')">Entrar</button>
+   <button class="btn green" style="margin-top:10px;background:var(--green);border:0;width:100%;padding:10px;font-weight:900" onclick="alert('Acceso correcto')">Entrar</button>
   </div>
  </section>
 </main>
 
 <nav class="bottom">
- <button onclick="showPage('home')"><span>🏠</span>Inicio</button>
+ <button onclick="showPage('home')" class="active"><span>🏠</span>Inicio</button>
  <button onclick="showPage('movies')"><span>🎬</span>Películas</button>
  <button onclick="showPage('game')"><span>🎮</span>Arcade</button>
  <button onclick="showPage('chat')"><span>💬</span>Chat</button>
