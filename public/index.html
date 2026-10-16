@@ -23,9 +23,34 @@ button,input,textarea,select{font:inherit}button{cursor:pointer}a{color:inherit;
 main{max-width:720px;margin:auto;padding:10px 8px 86px}.page{display:none}.page.active{display:block}
 .panel{border:1px solid #143b41;border-radius:14px;background:linear-gradient(145deg,#090d0e,#040606);padding:15px;margin-bottom:10px;box-shadow:inset 0 0 20px #00e5ff08}
 .hero h1{margin:0 0 4px;font-size:24px;color:var(--green)}.hero p{margin:0;color:var(--green);font-size:12px}
-.movies{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-top:10px}
-.movie{border:1px solid #00626b;border-radius:8px;background:#050707;padding:10px;text-align:center}
-.movie button{width:100%;margin-top:8px;padding:8px;background:var(--green);color:#000;border:0;border-radius:6px;font-weight:900}
+
+/* EFECTO BORDER RGB MULTICOLOR */
+@keyframes rgbBorder{
+ 0%{background-position:0 0,0% 50%}
+ 50%{background-position:0 0,100% 50%}
+ 100%{background-position:0 0,0% 50%}
+}
+
+.servicesTitle{font-size:18px;font-weight:900;margin:15px 0 10px;color:var(--green);text-shadow:0 0 8px #39ff14}
+.servicesGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:10px}
+@media(min-width:500px){.servicesGrid{grid-template-columns:repeat(4,minmax(0,1fr))}}
+
+.serviceCard{
+ min-height:130px;border-radius:14px;padding:12px;text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:space-between;
+ background:linear-gradient(#050808,#050808) padding-box, linear-gradient(120deg,#ff003c,#ffea00,#00e5ff,#b000ff,#ff007f,#39ff14,#ff003c) border-box;
+ border:2px solid transparent;background-size:auto,300% 300%;animation:rgbBorder 5s linear infinite;
+ box-shadow:0 0 14px rgba(57,255,20,0.15);cursor:pointer;transition:transform .15s;
+}
+.serviceCard:active{transform:scale(0.97)}
+.serviceName{font-size:13px;font-weight:900;color:var(--green);text-shadow:0 0 6px #39ff14}
+.servicePrice{font-size:18px;font-weight:900;color:#fff;text-shadow:0 0 8px #00e5ff}
+.serviceBtn{width:100%;padding:6px;background:var(--green);color:#000;border:0;border-radius:8px;font-weight:900;font-size:11px}
+
+/* Panel Admin de Servicios */
+.adminBox{margin-top:15px;padding:12px;border:1px dashed var(--red);border-radius:12px;background:rgba(255,0,60,0.05)}
+.adminBox h3{margin:0 0 8px;color:var(--red);font-size:14px}
+.adminListRow{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid #16353a;font-size:12px}
+
 .bottom{position:fixed;left:0;right:0;bottom:0;z-index:60;height:66px;background:rgba(2,3,3,.98);border-top:1px solid #4c0b17;display:grid;grid-template-columns:repeat(5,1fr)}
 .bottom button{border:0;background:transparent;color:var(--green);font-size:9px;display:flex;flex-direction:column;align-items:center;justify-content:center}
 .bottom button span{font-size:18px;margin-bottom:2px}
@@ -33,10 +58,10 @@ main{max-width:720px;margin:auto;padding:10px 8px 86px}.page{display:none}.page.
 .drawer button{width:100%;text-align:left;border:0;background:transparent;color:var(--green);padding:10px;border-radius:7px;font-weight:900}
 .hidden{display:none!important}
 body *{color:var(--green)!important}
-.btn.green,.movie button{color:#000!important}
+.serviceBtn{color:#000!important}
 input,textarea,select{background:#05090a;color:var(--green)!important;border:1px solid #16515b;border-radius:9px;padding:10px;width:100%;margin-top:5px}
 
-/* Estilos de Mparty para la sección de Películas */
+/* Estilos Mparty para Películas */
 .mpartyBox{margin-top:10px;padding:12px;border:2px solid transparent;border-radius:13px;background:linear-gradient(#050809,#050809) padding-box,linear-gradient(120deg,var(--red),var(--green),var(--cyan),var(--red)) border-box;background-size:auto,300% 300%;box-shadow:0 0 16px #39ff1418}
 .roomPlayerWrap{position:relative;width:100%;aspect-ratio:16/9;background:#000;border:1px solid #16515b;border-radius:9px;overflow:hidden;margin-top:8px}
 .roomPlayerWrap iframe,.roomPlayerWrap video{width:100%;height:100%;border:0;display:block;background:#000}
@@ -61,26 +86,41 @@ input,textarea,select{background:#05090a;color:var(--green)!important;border:1px
  <section id="home" class="page active">
   <div class="panel hero">
    <h1>MARCIANO.SHOP</h1>
-   <p>Bienvenido de vuelta a tu plataforma oficial con diseño neón exclusivo.</p>
+   <p>Plataforma oficial con diseño neón exclusivo.</p>
   </div>
+
   <div class="panel">
-   <h2>Panel Principal</h2>
-   <p>Explora el menú superior o inferior para acceder a las salas de Mparty, el arcade y las herramientas de usuario.</p>
+   <div class="servicesTitle">SERVICIOS DE STREAMING</div>
+   <div id="servicesContainer" class="servicesGrid">
+    <!-- Se cargan dinámicamente -->
+   </div>
+
+   <!-- Panel de administración exclusivo para agregar/editar -->
+   <div id="adminPanel" class="adminBox hidden">
+    <h3>⚙️ Panel de Administración (Gestión de Servicios)</h3>
+    <p style="font-size:11px;color:#a9afb4;margin-bottom:8px">Agrega un nuevo servicio o administra los existentes:</p>
+    <input id="newServiceName" placeholder="Nombre del Servicio (ej. SPOTIFY)">
+    <input id="newServicePrice" placeholder="Precio (ej. $35)">
+    <button class="serviceBtn" style="margin-top:8px;background:var(--red);color:#fff!important" onclick="addService()">➕ Agregar Nuevo Servicio</button>
+    
+    <div style="margin-top:12px">
+     <h4 style="font-size:12px;margin:0 0 5px;color:var(--green)">Servicios Actuales:</h4>
+     <div id="adminServiceList"></div>
+    </div>
+   </div>
   </div>
  </section>
 
  <section id="movies" class="page">
   <div class="panel">
    <h2>🎬 PELÍCULAS & Mparty Watch Party</h2>
-   <p>Salas exclusivas integradas con sincronización en tiempo real:</p>
+   <p>Salas exclusivas de reproducción sincronizada:</p>
    
    <div class="mpartyBox">
     <h3>Sala Principal Mparty</h3>
-    <p>Reproductor integrado de películas:</p>
     <div class="roomPlayerWrap">
-     <!-- Aquí puedes colocar tu reproductor o iframe de Mparty / OneDrive -->
      <div style="display:grid;place-items:center;height:100%;background:#030506;color:var(--green);font-size:12px;font-weight:900;">
-      🎥 SALA MPARTY ACTIVA
+      🎥 REPRODUCTOR MPARTY ACTIVO
      </div>
     </div>
    </div>
@@ -90,23 +130,25 @@ input,textarea,select{background:#05090a;color:var(--green)!important;border:1px
  <section id="game" class="page">
   <div class="panel">
    <h2>🎮 Marciano Arcade</h2>
-   <p>Selecciona tu juego y disfruta de la suite clásica.</p>
+   <p>Zona de juegos arcade clásica.</p>
   </div>
  </section>
 
  <section id="chat" class="page">
   <div class="panel">
-   <h2>💬 Chat de la Comunidad</h2>
-   <p>Conéctate y conversa en tiempo real.</p>
+   <h2>💬 Chat Público</h2>
+   <p>Espacio de conversación en línea.</p>
   </div>
  </section>
 
  <section id="auth" class="page">
   <div class="panel">
-   <h2>👤 Mi Cuenta</h2>
-   <input placeholder="Correo electrónico">
-   <input type="password" placeholder="Contraseña">
-   <button class="btn green" style="margin-top:10px;background:var(--green);border:0;width:100%;padding:10px;font-weight:900" onclick="alert('Acceso correcto')">Entrar</button>
+   <h2>👤 Mi Cuenta / Administrador</h2>
+   <p style="font-size:11px;color:#a9afb4">Inicia sesión con tu cuenta de administrador para desbloquear el panel de control de servicios.</p>
+   <input id="loginEmail" placeholder="Correo electrónico">
+   <input id="loginPass" type="password" placeholder="Contraseña">
+   <button class="serviceBtn" style="margin-top:10px;padding:10px;font-weight:900" onclick="handleLogin()">Iniciar Sesión</button>
+   <button class="serviceBtn" style="margin-top:6px;background:#16353a;color:var(--green)!important" onclick="handleLogout()">Cerrar Sesión</button>
   </div>
  </section>
 </main>
@@ -121,11 +163,115 @@ input,textarea,select{background:#05090a;color:var(--green)!important;border:1px
 </div>
 
 <script>
+let isAdmin = localStorage.getItem('marciano_admin') === 'true';
+
+let services = JSON.parse(localStorage.getItem('marciano_services')) || [
+  { name: 'NETFLIX', price: '$70' },
+  { name: 'DISNEY+', price: '$45' },
+  { name: 'HBO MAX', price: '$25' },
+  { name: 'PRIME VIDEO', price: '$15' },
+  { name: 'YOUTUBE', price: '$30' },
+  { name: 'SPOTIFY', price: '$35' },
+  { name: 'CRUNCHYROLL', price: '$20' },
+  { name: 'PARAMOUNT+', price: '$20' }
+];
+
+function saveAndRender(){
+  localStorage.setItem('marciano_services', JSON.stringify(services));
+  renderServices();
+}
+
+function renderServices(){
+  const container = document.getElementById('servicesContainer');
+  const adminList = document.getElementById('adminServiceList');
+  container.innerHTML = '';
+  adminList.innerHTML = '';
+
+  services.forEach((s, index) => {
+    // Tarjeta visual principal
+    container.innerHTML += `
+      <div class="serviceCard">
+       <div class="serviceName">${s.name}</div>
+       <div class="servicePrice">${s.price}</div>
+       <button class="serviceBtn" onclick="alert('Adquirir ${s.name}')">Adquirir</button>
+      </div>
+    `;
+
+    // Lista del administrador para editar/eliminar
+    if(isAdmin){
+      adminList.innerHTML += `
+        <div class="adminListRow">
+          <span><b>${s.name}</b> (${s.price})</span>
+          <div>
+            <button onclick="editService(${index})" style="background:#07100a;color:var(--green);border:1px solid var(--green);padding:3px 6px;border-radius:4px;font-size:10px">Editar</button>
+            <button onclick="deleteService(${index})" style="background:#33000d;color:var(--red);border:1px solid var(--red);padding:3px 6px;border-radius:4px;font-size:10px">Eliminar</button>
+          </div>
+        </div>
+      `;
+    }
+  });
+
+  document.getElementById('adminPanel').classList.toggle('hidden', !isAdmin);
+}
+
+function addService(){
+  if(!isAdmin) return alert('Acceso denegado. Solo el administrador puede agregar servicios.');
+  const name = document.getElementById('newServiceName').value.trim();
+  const price = document.getElementById('newServicePrice').value.trim();
+  if(!name || !price) return alert('Llena ambos campos.');
+  services.push({ name, price });
+  document.getElementById('newServiceName').value = '';
+  document.getElementById('newServicePrice').value = '';
+  saveAndRender();
+}
+
+function deleteService(index){
+  if(!isAdmin) return;
+  if(confirm('¿Eliminar este servicio?')){
+    services.splice(index, 1);
+    saveAndRender();
+  }
+}
+
+function editService(index){
+  if(!isAdmin) return;
+  const newName = prompt('Nuevo nombre:', services[index].name);
+  const newPrice = prompt('Nuevo precio:', services[index].price);
+  if(newName && newPrice){
+    services[index] = { name: newName, price: newPrice };
+    saveAndRender();
+  }
+}
+
+function handleLogin(){
+  const email = document.getElementById('loginEmail').value.trim();
+  // Puedes cambiar o validar aquí tu correo/contraseña de administrador
+  if(email.length > 0){
+    isAdmin = true;
+    localStorage.setItem('marciano_admin', 'true');
+    alert('¡Bienvenido Administrador! Panel de control activado.');
+    renderServices();
+    showPage('home');
+  } else {
+    alert('Ingresa tus datos');
+  }
+}
+
+function handleLogout(){
+  isAdmin = false;
+  localStorage.setItem('marciano_admin', 'false');
+  alert('Sesión de administrador cerrada.');
+  renderServices();
+}
+
 function toggleDrawer(){ document.getElementById('drawer').classList.toggle('hidden'); }
 function showPage(id){
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.getElementById(id).classList.add('active');
 }
+
+// Inicializar al cargar
+renderServices();
 </script>
 </body>
 </html>
