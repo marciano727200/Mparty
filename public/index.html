@@ -57,14 +57,15 @@ main{max-width:1200px;margin:auto;padding:10px 4px 86px}.page{display:none}.page
 .adminBox h3{margin:0 0 8px;color:var(--red);font-size:14px}
 .adminListRow{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid #16353a;font-size:12px}
 
-/* Estilos para la sección de Reportes */
-.reportCard{background:#05090a;border:1px solid #16515b;border-radius:10px;padding:12px;margin-bottom:10px}
+.reportCard{background:#05090a;border:1px solid #16515b;border-radius:10px;padding:10px;margin-bottom:8px;cursor:pointer;transition:0.2s}
+.reportCard:hover{border-color:var(--green)}
 .badge{padding:3px 8px;border-radius:6px;font-size:10px;font-weight:900;display:inline-block}
 .badge-pendiente{background:#ff003c33;color:#ff003c;border:1px solid #ff003c}
 .badge-proceso{background:#ffea0033;color:#ffea00;border:1px solid #ffea00}
 .badge-resuelto{background:#39ff1433;color:#39ff14;border:1px solid #39ff14}
+.badge-finalizado{background:#8e969c33;color:#8e969c;border:1px solid #8e969c}
 
-.chatBox{background:#020303;border:1px solid #16353a;border-radius:8px;height:140px;overflow-y:auto;padding:8px;margin:8px 0;font-size:11px}
+.chatBox{background:#020303;border:1px solid #16353a;border-radius:8px;height:180px;overflow-y:auto;padding:8px;margin:8px 0;font-size:11px}
 .chatMsg{margin-bottom:6px;padding:4px 8px;border-radius:6px;max-width:85%}
 .chatMsg.user{background:#0b1d20;color:#fff;margin-left:auto}
 .chatMsg.admin{background:#3b0713;color:#ff003c;margin-right:auto}
@@ -105,7 +106,7 @@ input,textarea,select{background:#05090a;color:var(--green)!important;border:1px
   <div class="panel hero">
    <h1>MARCIANO.SHOP</h1>
    <p>Plataforma oficial con diseño neón exclusivo.</p>
-   <button class="reportBtnMain" onclick="showPage('reports')">🚨 CREAR O VER MIS REPORTES</button>
+   <button class="reportBtnMain" onclick="checkReportAccess()">🚨 CENTRO DE REPORTES</button>
   </div>
 
   <div class="panel">
@@ -130,23 +131,19 @@ input,textarea,select{background:#05090a;color:var(--green)!important;border:1px
   </div>
  </section>
 
- <!-- Subpágina de Reportes -->
+ <!-- Subpágina de Reportes (Vista General y Chat) -->
  <section id="reports" class="page">
   <div class="panel">
    <h2>🚨 Centro de Soporte y Reportes</h2>
-   <p style="font-size:11px;color:#a9afb4">Envía tu reporte o incidencia y conversa directamente con el administrador.</p>
-   
-   <div style="background:#05090a;border:1px solid #16515b;border-radius:10px;padding:12px;margin-top:10px">
-    <h3 style="font-size:13px;margin:0 0 8px;color:var(--green)">Nuevo Reporte</h3>
-    <input id="reportUser" placeholder="Tu Nombre o Usuario" style="margin-bottom:6px">
-    <textarea id="reportText" placeholder="Describe tu problema o reporte detalladamente..." style="height:60px;resize:none"></textarea>
-    <button class="serviceBtn" style="margin-top:8px;background:var(--red);color:#fff!important;padding:8px" onclick="createReport()">📤 Enviar Reporte</button>
-   </div>
+   <div id="reportsContentArea"></div>
+  </div>
+ </section>
 
-   <div style="margin-top:15px">
-    <h3 style="font-size:13px;margin:0 0 8px;color:var(--green)">Listado de Reportes Activos:</h3>
-    <div id="reportsContainer"></div>
-   </div>
+ <!-- Subpágina de Detalle de Chat para el Admin -->
+ <section id="reportDetail" class="page">
+  <div class="panel">
+   <button class="serviceBtn" style="width:90px;margin-bottom:10px;background:#16353a;color:var(--green)!important" onclick="showPage('reports')">⬅️ Volver</button>
+   <div id="reportDetailContent"></div>
   </div>
  </section>
 
@@ -181,20 +178,15 @@ input,textarea,select{background:#05090a;color:var(--green)!important;border:1px
  </section>
 
  <section id="auth" class="page">
-  <div class="panel">
-   <h2>👤 Mi Cuenta / Administrador</h2>
-   <p style="font-size:11px;color:#a9afb4">Inicia sesión como administrador para gestionar los servicios y reportes.</p>
-   <input id="loginEmail" placeholder="Correo electrónico">
-   <input id="loginPass" type="password" placeholder="Contraseña">
-   <button class="serviceBtn" style="margin-top:10px;padding:10px;font-weight:900" onclick="handleLogin()">Iniciar Sesión</button>
-   <button class="serviceBtn" style="margin-top:6px;background:#16353a;color:var(--green)!important" onclick="handleLogout()">Cerrar Sesión</button>
+  <div class="panel" id="authPanelContainer">
+   <!-- Se llena dinámicamente según si está logueado -->
   </div>
  </section>
 </main>
 
 <nav class="bottom">
  <button onclick="showPage('home')" class="active"><span>🏠</span>Inicio</button>
- <button onclick="showPage('reports')"><span>🚨</span>Reportes</button>
+ <button onclick="checkReportAccess()"><span>🚨</span>Reportes</button>
  <button onclick="showPage('movies')"><span>🎬</span>Películas</button>
  <button onclick="showPage('game')"><span>🎮</span>Arcade</button>
  <button onclick="showPage('auth')"><span>👤</span>Cuenta</button>
@@ -202,7 +194,8 @@ input,textarea,select{background:#05090a;color:var(--green)!important;border:1px
 </div>
 
 <script>
-let isAdmin = localStorage.getItem('marciano_admin') === 'true';
+let currentUser = JSON.parse(localStorage.getItem('marciano_current_user')) || null;
+let isAdmin = currentUser && currentUser.email === 'm@m.m';
 
 let services = JSON.parse(localStorage.getItem('marciano_services')) || [
   { name: 'NETFLIX', desc: '1 Pantalla HD', price: '$25', link: '#', logo: 'https://images.unsplash.com/photo-1574375927938-d5a98e8ffe85?w=150' },
@@ -315,138 +308,289 @@ function editService(index){
   }
 }
 
-/* Lógica de Reportes y Chat */
+/* Lógica de Autenticación y Registro */
+function renderAuth(){
+  const container = document.getElementById('authPanelContainer');
+  if(currentUser){
+    container.innerHTML = `
+      <h2>👤 Mi Cuenta</h2>
+      <p style="font-size:12px;color:var(--cyan);margin-bottom:12px">Sesión iniciada como: <b>${currentUser.email}</b></p>
+      <button class="serviceBtn" style="background:var(--red);color:#fff!important;padding:10px" onclick="handleLogout()">Cerrar Sesión</button>
+    `;
+  } else {
+    container.innerHTML = `
+      <h2>👤 Registro / Iniciar Sesión</h2>
+      <p style="font-size:11px;color:#a9afb4">Inicia sesión o regístrate para crear reportes:</p>
+      <input id="authEmail" placeholder="Correo electrónico">
+      <input id="authPass" type="password" placeholder="Contraseña">
+      <div style="display:flex;gap:8px;margin-top:10px">
+        <button class="serviceBtn" style="padding:10px;font-weight:900" onclick="handleLogin()">Iniciar Sesión</button>
+        <button class="serviceBtn" style="background:#16353a;color:var(--green)!important;padding:10px;font-weight:900" onclick="handleRegister()">Registrarse</button>
+      </div>
+    `;
+  }
+}
+
+function handleRegister(){
+  const email = document.getElementById('authEmail').value.trim();
+  const pass = document.getElementById('authPass').value.trim();
+  if(!email || !pass) return alert('Llena todos los campos.');
+  
+  let users = JSON.parse(localStorage.getItem('marciano_users')) || [];
+  if(users.some(u => u.email === email)) return alert('Este correo ya está registrado.');
+
+  users.push({ email, pass });
+  localStorage.setItem('marciano_users', JSON.stringify(users));
+  alert('¡Registro exitoso! Ahora inicia sesión.');
+  document.getElementById('authEmail').value = '';
+  document.getElementById('authPass').value = '';
+}
+
+function handleLogin(){
+  const email = document.getElementById('authEmail').value.trim();
+  const pass = document.getElementById('authPass').value.trim();
+
+  if(email === 'm@m.m' && pass === 'admin'){
+    currentUser = { email: 'm@m.m' };
+    isAdmin = true;
+  } else {
+    let users = JSON.parse(localStorage.getItem('marciano_users')) || [];
+    let found = users.find(u => u.email === email && u.pass === pass);
+    if(!found) return alert('Correo o contraseña incorrectos.');
+    currentUser = { email: found.email };
+    isAdmin = false;
+  }
+
+  localStorage.setItem('marciano_current_user', JSON.stringify(currentUser));
+  localStorage.setItem('marciano_admin', isAdmin ? 'true' : 'false');
+  alert('¡Bienvenido ' + currentUser.email + '!');
+  renderServices();
+  renderAuth();
+  showPage('home');
+}
+
+function handleLogout(){
+  currentUser = null;
+  isAdmin = false;
+  localStorage.removeItem('marciano_current_user');
+  localStorage.setItem('marciano_admin', 'false');
+  alert('Sesión cerrada.');
+  renderServices();
+  renderAuth();
+  showPage('auth');
+}
+
+function checkReportAccess(){
+  if(!currentUser){
+    alert('Debes iniciar sesión o registrarte para ver o crear reportes.');
+    showPage('auth');
+    return;
+  }
+  showPage('reports');
+  renderReports();
+}
+
+/* Lógica de Reportes y Chat por Usuario */
 function saveAndRenderReports(){
   localStorage.setItem('marciano_reports', JSON.stringify(reports));
   renderReports();
 }
 
 function renderReports(){
-  const container = document.getElementById('reportsContainer');
+  const container = document.getElementById('reportsContentArea');
   container.innerHTML = '';
 
-  if(reports.length === 0){
-    container.innerHTML = `<p style="font-size:11px;color:#8e969c">No hay reportes activos en este momento.</p>`;
-    return;
-  }
+  if(!currentUser) return;
 
-  reports.forEach((rep, index) => {
-    let badgeClass = 'badge-pendiente';
-    if(rep.status === 'En Proceso') badgeClass = 'badge-proceso';
-    if(rep.status === 'Resuelto') badgeClass = 'badge-resuelto';
+  if(isAdmin){
+    // Vista del Administrador: Lista de todos los usuarios con reportes
+    let userMap = {};
+    reports.forEach(r => {
+      if(!userMap[r.userEmail]) userMap[r.userEmail] = [];
+      userMap[r.userEmail].push(r);
+    });
 
-    let chatHtml = '';
-    if(rep.messages && rep.messages.length > 0){
-      rep.messages.forEach(m => {
-        chatHtml += `<div class="chatMsg ${m.sender}"><b>${m.name}:</b> ${m.text}</div>`;
-      });
-    } else {
-      chatHtml = `<div style="font-size:10px;color:#8e969c;text-align:center">Sin mensajes aún. Inicia la conversación.</div>`;
+    let keys = Object.keys(userMap);
+    if(keys.length === 0){
+      container.innerHTML = `<p style="font-size:11px;color:#8e969c">No hay reportes de usuarios activos.</p>`;
+      return;
     }
 
-    let adminControls = '';
-    if(isAdmin){
-      adminControls = `
-        <div style="margin-top:8px;padding-top:6px;border-top:1px dashed #16353a;display:flex;gap:5px;flex-wrap:wrap">
-          <button onclick="changeStatus(${index}, 'Pendiente')" style="background:#ff003c22;color:#ff003c;border:1px solid #ff003c;font-size:9px;padding:3px 6px;border-radius:4px">Pendiente</button>
-          <button onclick="changeStatus(${index}, 'En Proceso')" style="background:#ffea0022;color:#ffea00;border:1px solid #ffea00;font-size:9px;padding:3px 6px;border-radius:4px">En Proceso</button>
-          <button onclick="changeStatus(${index}, 'Resuelto')" style="background:#39ff1422;color:#39ff14;border:1px solid #39ff14;font-size:9px;padding:3px 6px;border-radius:4px">Resuelto</button>
-          <button onclick="deleteReport(${index})" style="background:#ff003c;color:#fff;border:0;font-size:9px;padding:3px 8px;border-radius:4px;margin-left:auto">🗑️ Eliminar Reporte</button>
+    container.innerHTML = `<p style="font-size:11px;color:#a9afb4;margin-bottom:10px">Selecciona un usuario para ver su reporte y chat:</p>`;
+    keys.forEach(email => {
+      let userReports = userMap[email];
+      let lastReport = userReports[userReports.length - 1];
+      let badgeClass = 'badge-pendiente';
+      if(lastReport.status === 'En Proceso') badgeClass = 'badge-proceso';
+      if(lastReport.status === 'Resuelto') badgeClass = 'badge-resuelto';
+      if(lastReport.status === 'Finalizado') badgeClass = 'badge-finalizado';
+
+      container.innerHTML += `
+        <div class="reportCard" onclick="openAdminChat('${email}')">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <b style="font-size:13px;color:var(--cyan)">👤 ${email}</b>
+            <span class="badge ${badgeClass}">${lastReport.status}</span>
+          </div>
+          <p style="font-size:11px;color:#fff;margin:5px 0 0">📝 ${lastReport.text}</p>
+        </div>
+      `;
+    });
+
+  } else {
+    // Vista del Usuario Normal: Su propio reporte y chat
+    let userReport = reports.find(r => r.userEmail === currentUser.email);
+
+    if(!userReport){
+      container.innerHTML = `
+        <div style="background:#05090a;border:1px solid #16515b;border-radius:10px;padding:12px;margin-top:10px">
+          <h3 style="font-size:13px;margin:0 0 8px;color:var(--green)">Enviar Nuevo Reporte</h3>
+          <textarea id="userReportText" placeholder="Describe tu problema o duda detalladamente..." style="height:60px;resize:none"></textarea>
+          <button class="serviceBtn" style="margin-top:8px;background:var(--red);color:#fff!important;padding:8px" onclick="createUserReport()">📤 Enviar Reporte</button>
+        </div>
+      `;
+    } else {
+      let badgeClass = 'badge-pendiente';
+      if(userReport.status === 'En Proceso') badgeClass = 'badge-proceso';
+      if(userReport.status === 'Resuelto') badgeClass = 'badge-resuelto';
+      if(userReport.status === 'Finalizado') badgeClass = 'badge-finalizado';
+
+      let chatHtml = '';
+      if(userReport.messages && userReport.messages.length > 0){
+        userReport.messages.forEach(m => {
+          chatHtml += `<div class="chatMsg ${m.sender}"><b>${m.name}:</b> ${m.text}</div>`;
+        });
+      } else {
+        chatHtml = `<div style="font-size:10px;color:#8e969c;text-align:center">Sin mensajes aún.</div>`;
+      }
+
+      let chatInputArea = `
+        <div style="display:flex;gap:5px;margin-top:8px">
+          <input id="userMsgInput" placeholder="Escribe un mensaje..." style="margin-top:0;font-size:10px;padding:6px">
+          <button class="serviceBtn" style="width:70px;margin-top:0" onclick="sendUserMsg()">Enviar</button>
+        </div>
+      `;
+
+      if(userReport.status === 'Finalizado'){
+        chatInputArea = `<div style="font-size:11px;color:#ff003c;text-align:center;margin-top:10px">🔒 Este chat ha sido finalizado por el administrador.</div>`;
+      }
+
+      container.innerHTML = `
+        <div class="reportCard">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+            <b style="font-size:12px;color:var(--cyan)">Tu Reporte</b>
+            <span class="badge ${badgeClass}">${userReport.status}</span>
+          </div>
+          <p style="font-size:11px;margin:0 0 8px;color:#fff">${userReport.text}</p>
+          <div class="chatBox" id="userChatBox">${chatHtml}</div>
+          ${chatInputArea}
         </div>
       `;
     }
-
-    container.innerHTML += `
-      <div class="reportCard">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
-          <b style="font-size:12px;color:var(--cyan)">👤 ${rep.user}</b>
-          <span class="badge ${badgeClass}">${rep.status}</span>
-        </div>
-        <p style="font-size:11px;margin:0 0 8px;color:#fff">${rep.text}</p>
-        
-        <div class="chatBox" id="chatBox_${index}">${chatHtml}</div>
-        
-        <div style="display:flex;gap:5px">
-          <input id="msgInput_${index}" placeholder="Escribe un mensaje..." style="margin-top:0;font-size:10px;padding:6px">
-          <button class="serviceBtn" style="width:70px;margin-top:0" onclick="sendReportMsg(${index})">Enviar</button>
-        </div>
-        ${adminControls}
-      </div>
-    `;
-  });
+  }
 }
 
-function createReport(){
-  const user = document.getElementById('reportUser').value.trim();
-  const text = document.getElementById('reportText').value.trim();
-  if(!user || !text) return alert('Por favor ingresa tu nombre y describe tu reporte.');
+function createUserReport(){
+  const text = document.getElementById('userReportText').value.trim();
+  if(!text) return alert('Escribe la descripción de tu reporte.');
 
   reports.push({
-    user: user,
+    userEmail: currentUser.email,
     text: text,
     status: 'Pendiente',
     messages: []
   });
 
-  document.getElementById('reportUser').value = '';
-  document.getElementById('reportText').value = '';
   saveAndRenderReports();
-  alert('¡Reporte enviado con éxito!');
 }
 
-function sendReportMsg(index){
-  const input = document.getElementById(`msgInput_${index}`);
+function sendUserMsg(){
+  const input = document.getElementById('userMsgInput');
   const text = input.value.trim();
   if(!text) return;
 
-  const senderName = isAdmin ? 'Administrador' : reports[index].user;
-  const senderType = isAdmin ? 'admin' : 'user';
+  let report = reports.find(r => r.userEmail === currentUser.email);
+  if(!report) return;
 
-  if(!reports[index].messages) reports[index].messages = [];
-  reports[index].messages.push({
-    name: senderName,
-    sender: senderType,
-    text: text
-  });
-
+  if(!report.messages) report.messages = [];
+  report.messages.push({ name: currentUser.email, sender: 'user', text: text });
   input.value = '';
   saveAndRenderReports();
 }
 
-function changeStatus(index, newStatus){
-  if(!isAdmin) return;
-  reports[index].status = newStatus;
-  saveAndRenderReports();
-}
+/* Subpágina de detalle para el Administrador */
+function openAdminChat(email){
+  let report = reports.find(r => r.userEmail === email);
+  if(!report) return;
 
-function deleteReport(index){
-  if(!isAdmin) return;
-  if(confirm('¿Estás seguro de eliminar este reporte finalizado?')){
-    reports.splice(index, 1);
-    saveAndRenderReports();
-  }
-}
+  showPage('reportDetail');
+  const detailContainer = document.getElementById('reportDetailContent');
 
-function handleLogin(){
-  const email = document.getElementById('loginEmail').value.trim();
-  if(email.length > 0){
-    isAdmin = true;
-    localStorage.setItem('marciano_admin', 'true');
-    alert('¡Bienvenido Administrador!');
-    renderServices();
-    renderReports();
-    showPage('home');
+  let badgeClass = 'badge-pendiente';
+  if(report.status === 'En Proceso') badgeClass = 'badge-proceso';
+  if(report.status === 'Resuelto') badgeClass = 'badge-resuelto';
+  if(report.status === 'Finalizado') badgeClass = 'badge-finalizado';
+
+  let chatHtml = '';
+  if(report.messages && report.messages.length > 0){
+    report.messages.forEach(m => {
+      chatHtml += `<div class="chatMsg ${m.sender}"><b>${m.name}:</b> ${m.text}</div>`;
+    });
   } else {
-    alert('Ingresa correo');
+    chatHtml = `<div style="font-size:10px;color:#8e969c;text-align:center">Sin mensajes aún.</div>`;
   }
+
+  detailContainer.innerHTML = `
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+      <h3 style="font-size:14px;margin:0;color:var(--cyan)">Chat con: ${email}</h3>
+      <span class="badge ${badgeClass}" id="adminReportStatus">${report.status}</span>
+    </div>
+    <p style="font-size:11px;color:#fff;margin:0 0 10px">📝 <b>Reporte:</b> ${report.text}</p>
+
+    <div class="chatBox" id="adminChatBox">${chatHtml}</div>
+
+    <div style="display:flex;gap:5px;margin-bottom:10px">
+      <input id="adminMsgInput" placeholder="Escribe respuesta..." style="margin-top:0;font-size:10px;padding:6px">
+      <button class="serviceBtn" style="width:70px;margin-top:0" onclick="sendAdminMsg('${email}')">Enviar</button>
+    </div>
+
+    <div style="display:flex;gap:5px;flex-wrap:wrap;border-top:1px dashed #16353a;padding-top:10px">
+      <button onclick="updateReportStatus('${email}', 'En Proceso')" style="background:#ffea0022;color:#ffea00;border:1px solid #ffea00;font-size:9px;padding:5px 8px;border-radius:4px">🔄 En Proceso</button>
+      <button onclick="updateReportStatus('${email}', 'Resuelto')" style="background:#39ff1422;color:#39ff14;border:1px solid #39ff14;font-size:9px;padding:5px 8px;border-radius:4px">✅ Resuelto</button>
+      <button onclick="updateReportStatus('${email}', 'Finalizado')" style="background:#8e969c22;color:#8e969c;border:1px solid #8e969c;font-size:9px;padding:5px 8px;border-radius:4px">🔒 Finalizar Chat</button>
+      <button onclick="deleteAdminReport('${email}')" style="background:#ff003c;color:#fff;border:0;font-size:9px;padding:5px 10px;border-radius:4px;margin-left:auto">🗑️ Eliminar</button>
+    </div>
+  `;
 }
 
-function handleLogout(){
-  isAdmin = false;
-  localStorage.setItem('marciano_admin', 'false');
-  alert('Sesión cerrada');
-  renderServices();
-  renderReports();
+function sendAdminMsg(email){
+  const input = document.getElementById('adminMsgInput');
+  const text = input.value.trim();
+  if(!text) return;
+
+  let report = reports.find(r => r.userEmail === email);
+  if(!report) return;
+
+  if(!report.messages) report.messages = [];
+  report.messages.push({ name: 'Administrador', sender: 'admin', text: text });
+  input.value = '';
+  saveAndRenderReports();
+  openAdminChat(email);
+}
+
+function updateReportStatus(email, newStatus){
+  let report = reports.find(r => r.userEmail === email);
+  if(!report) return;
+  report.status = newStatus;
+  saveAndRenderReports();
+  openAdminChat(email);
+}
+
+function deleteAdminReport(email){
+  if(confirm('¿Eliminar este reporte permanentemente?')){
+    reports = reports.filter(r => r.userEmail !== email);
+    saveAndRenderReports();
+    showPage('reports');
+  }
 }
 
 function toggleDrawer(){ document.getElementById('drawer').classList.toggle('hidden'); }
@@ -456,7 +600,7 @@ function showPage(id){
 }
 
 renderServices();
-renderReports();
+renderAuth();
 </script>
 </body>
 </html>
